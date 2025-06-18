@@ -1,3 +1,7 @@
+# air-monitor-algorithms 1.1.0
+
+Refactoring for best practices and edge case handling. No changes to functionality.
+
 # air-monitor-algorithms 1.0.3
 
 - Replaced `dailyAverage()` and `diurnalAverage()` functions with `dailyStats()`
