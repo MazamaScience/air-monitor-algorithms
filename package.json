@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "babel src -d dist",
-    "docs": "jsdoc src -d docs -R ./README.md -c ./jsdoc.conf.json",
+    "docs": "jsdoc -c ./jsdoc.conf.json",
     "test": "uvu"
   },
   "repository": {

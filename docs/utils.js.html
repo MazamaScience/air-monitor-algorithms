@@ -27,121 +27,106 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * Convert an array of values to an array rounded to `digits` decimal places
- * and using `null` as the default missing value. Missing values are
- * any members of `x` with values of `undefined`, `NaN` or `null`.
+ * roundAndUseNull
  *
- * @param {Array.&lt;number>} x Array of values.
- * @param {number} digits Number of digits to retain after the decimal point.
- * @returns {Array.&lt;number>} Array of values.
+ * Convert an array of numbers to an array where each number is rounded to a fixed
+ * number of decimal places. Any value that is not a valid number (NaN, undefined, null)
+ * will be converted to `null`.
+ *
+ * @param {Array&lt;number>} x - The input array of values.
+ * @param {number} digits - Number of decimal places to round to (default is 1).
+ * @returns {Array&lt;number|null>} - New array with rounded values or nulls.
  */
 export function roundAndUseNull(x, digits = 1) {
-  let factor = Math.pow(10, digits);
-  let x_rounded = x.map((o) =>
-    o === null || o === undefined || isNaN(o)
-      ? null
-      : Math.round(factor * o) / factor
-  );
-  return x_rounded;
+  const factor = 10 ** digits;
+
+  return x.map((value) => {
+    // Replace non-numeric or missing values with null
+    if (!Number.isFinite(value)) return null;
+
+    // Round numeric value to specified decimal places
+    return Math.round(value * factor) / factor;
+  });
 }
 
 /**
- * Convert an array of values to an array where all values of `undefined` or
- * `NaN` have been replaced by `null`.
+ * useNull
  *
- * @param {Array.&lt;number>} x Array of values.
- * @returns {Array.&lt;number>} Array of values.
+ * Convert an array so that any undefined, null, or non-numeric (NaN) values
+ * are replaced by `null`.
+ *
+ * @param {Array&lt;*>} x - Input array with possibly invalid values.
+ * @returns {Array&lt;number|null>} - Cleaned array with only numbers or nulls.
  */
 export function useNull(x) {
-  let x_null = x.map((o) =>
-    o === null || o === undefined || isNaN(o) ? null : o
-  );
-  return x_null;
+  return x.map((value) => (Number.isFinite(value) ? value : null));
 }
 
 /**
- * Return the minimum value in an array, ignoring any non-numeric values such as
- * `NaN` or `null`. If all values are non-numeric, `null` is returned.
+ * arrayMin
  *
- * @param {Array.&lt;number>} x Array of values.
- * @returns {number|null} Minimum numeric value or null.
+ * Return the smallest number from the array, ignoring any non-numeric values.
+ * Returns null if no valid numbers are present.
+ *
+ * @param {Array&lt;*>} x - Input array.
+ * @returns {number|null} - Minimum number or null if none found.
  */
 export function arrayMin(x) {
-  // https://stackoverflow.com/questions/19279852/how-to-skip-nan-when-using-math-min-apply
-  const FUN = function (a, o) {
-    return o === null || o > a ? a : o;
-  };
-  let value = useNull(x).reduce(FUN, Number.MAX_VALUE);
-  if (value === Number.MAX_VALUE) {
-    value = null;
-  }
-  return value;
+  const valid = useNull(x).filter((v) => v !== null);
+  return valid.length > 0 ? Math.min(...valid) : null;
 }
 
 /**
- * Return the maximum value in an array, ignoring any non-numeric values such as
- * `NaN` or `null`. If all values are non-numeric, `null` is returned.
+ * arrayMax
  *
- * @param {Array.&lt;number>} x Array of values.
- * @returns {number|null} Maximum numeric value or null.
+ * Return the largest number from the array, ignoring any non-numeric values.
+ * Returns null if no valid numbers are present.
+ *
+ * @param {Array&lt;*>} x - Input array.
+ * @returns {number|null} - Maximum number or null if none found.
  */
 export function arrayMax(x) {
-  // https://stackoverflow.com/questions/19279852/how-to-skip-nan-when-using-math-min-apply
-  const FUN = function (a, o) {
-    return o === null || o &lt; a ? a : o;
-  };
-  let value = useNull(x).reduce(FUN, Number.MIN_VALUE);
-  if (value === Number.MIN_VALUE) {
-    value = null;
-  }
-  return value;
+  const valid = useNull(x).filter((v) => v !== null);
+  return valid.length > 0 ? Math.max(...valid) : null;
 }
 
 /**
- * Return the count of valid values an array, ignoring any non-numeric values
- * such as `NaN` or `null`.
+ * arrayCount
  *
- * @param {Array.&lt;number>} x Array of values.
- * @returns {number} Count of numeric values.
+ * Count the number of valid numeric values in the array.
+ *
+ * @param {Array&lt;*>} x - Input array.
+ * @returns {number} - Count of numbers (excluding nulls and invalid values).
  */
 export function arrayCount(x) {
-  const FUN = function (a, o) {
-    return o === null ? a : a + 1;
-  };
-  let value = useNull(x).reduce(FUN, 0);
-  return value;
+  return useNull(x).filter((v) => v !== null).length;
 }
 
 /**
- * Return the sum of an array, ignoring any non-numeric values such as
- * `NaN` or `null`. If all values are non-numeric, `null` is returned.
+ * arraySum
  *
- * @param {Array.&lt;number>} x Array of values.
- * @returns {number|null} Sum of numeric values or null.
+ * Sum all valid numeric values in the array. Returns null if all values are invalid.
+ *
+ * @param {Array&lt;*>} x - Input array.
+ * @returns {number|null} - Sum of numbers or null if no valid values.
  */
 export function arraySum(x) {
-  const FUN = function (a, o) {
-    return o === null ? a : a + o;
-  };
-  let value = useNull(x).reduce(FUN, null);
-  return value;
+  const valid = useNull(x).filter((v) => v !== null);
+  return valid.length > 0 ? valid.reduce((a, b) => a + b, 0) : null;
 }
 
 /**
- * Return the mean of an array, ignoring any non-numeric values such as
- * `NaN` or `null`. If all values are non-numeric, `null` is returned.
+ * arrayMean
  *
- * @param {Array.&lt;number>} x Array of values.
- * @returns {number|null} Mean of numeric values or null.
+ * Calculate the average (mean) of valid numbers in the array.
+ * Returns null if no valid numbers are present.
+ *
+ * @param {Array&lt;*>} x - Input array.
+ * @returns {number|null} - Mean of valid values or null.
  */
 export function arrayMean(x) {
-  let count = arrayCount(x);
-  if (count === 0) {
-    return null;
-  } else {
-    let value = arraySum(x) / count;
-    return value;
-  }
+  const valid = useNull(x).filter((v) => v !== null);
+  return valid.length > 0 ? arraySum(valid) / valid.length : null;
 }
 </code></pre>
         </article>
@@ -159,7 +144,7 @@ export function arrayMean(x) {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Tue Apr 02 2024 15:12:53 GMT-0700 (Pacific Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Wed Jun 18 2025 14:27:15 GMT-0700 (Pacific Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

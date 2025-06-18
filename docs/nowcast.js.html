@@ -29,93 +29,103 @@
             <pre class="prettyprint source linenums"><code>import { roundAndUseNull } from "./utils.js";
 
 /**
- * Returns an array of NowCast values derived from the incoming time series.
+ * Calculate an array of NowCast values from hourly PM measurements.
  *
- * **NOTE:** Incoming data must be on an hourly axis with no gaps. Missing
- * values should be represented by 'null'.
+ * Uses a 12-hour rolling window and the EPA NowCast algorithm to calculate
+ * weighted averages. Missing values should be represented by `null`.
  *
- * @param {Array.&lt;number>} pm Array of hourly PM2.5 or PM10  measurements.
- * @returns {Array.&lt;number>} Array of NowCast values.
+ * The returned array is the same length as the input, but early entries
+ * may contain `null` due to insufficient data.
+ *
+ * @param {Array&lt;number|null>} pm - Hourly PM2.5 or PM10 values (no gaps).
+ * @returns {Array&lt;number|null>} - Array of NowCast values, rounded to 1 decimal place.
  */
 export function pm_nowcast(pm) {
-  // TODO: Validate that pm is numeric
-  // See:  https://observablehq.com/@openaq/epa-pm-nowcast
-  let nowcast = Array(pm.length);
-  for (let i = 0; i &lt; pm.length; i++) {
-    let end = i + 1;
-    let start = end &lt; 12 ? 0 : end - 12;
-    nowcast[i] = nowcastPM(pm.slice(start, end));
+  // Validate input
+  if (!Array.isArray(pm)) {
+    throw new Error("Input to pm_nowcast() must be an array.");
   }
 
-  // Round to one decimal place and use null as the missing value
-  nowcast = roundAndUseNull(nowcast);
+  // NOTE:  We only use the index `i`, not the actual PM value, so `_` is used to
+  // NOTE:  indicate an unused parameter. The underscore `_` is a common
+  // NOTE:  convention in JavaScript to mean "I don't need this value".
+  const nowcast = pm.map((_, i) => {
+    const end = i + 1;
+    const start = end &lt; 12 ? 0 : end - 12;
+    const window = pm.slice(start, end);
+    return nowcastPM(window);
+  });
 
-  return nowcast;
+  // Round to one decimal place and convert non-numeric values to null
+  return roundAndUseNull(nowcast);
 }
 
 /**
- * Convert an array of up to 12 PM2.5 or PM10 measurements in chronological order
- * into a single NowCast value.
+ * Compute a single NowCast value from up to 12 hours of data.
  *
- * **NOTE:** Incoming data must be on an hourly axis with no gaps.  Missing
- * values should be represented by 'null'.
+ * Applies EPA's NowCast formula, using exponential weighting that depends
+ * on how much values vary over time. Returns `null` if too little recent
+ * data is available.
  *
  * @private
- * @param {Array.&lt;number>} x Array of 12 hourly values in chronological order.
- * @returns {number} NowCast value.
+ * @param {Array&lt;number|null>} x - Up to 12 hourly values in chronological order.
+ * @returns {number|null} - Single NowCast value, or null if data is insufficient.
  */
 function nowcastPM(x) {
-  // NOTE:  We don't insist on 12 hours of data. Convert single values into arrays.
+  // Allow single number input
   if (typeof x === "number") x = [x];
 
-  // NOTE:  map/reduce syntax: a: accumulator; o: object; i: index
-
-  // NOTE:  The algorithm below assumes reverse chronological order.
-  // NOTE:  WARNING:  In javascript `null * 1 = 0` which messes up things in
-  // NOTE:  our mapping functions. So we convert all null to NaN
-  // NOTE:  and then back to null upon return.
+  // NOTE:  The NowCast algorithm expects values in reverse chronological order
+  // NOTE:  Missing values are treated as NaN to avoid incorrect math results,
+  // NOTE:  because in JavaScript: null * 1 = 0, which would corrupt the weighting step.
   x = x.reverse().map((o) => (o === null ? NaN : o));
 
-  // Check for recent values;
-  let recentValidCount = x
+  // NOTE: EPA requires at least 2 valid values in the most recent 3 hours
+  const recentValidCount = x
     .slice(0, 3)
     .reduce((a, o) => (Number.isNaN(o) ? a : a + 1), 0);
   if (recentValidCount &lt; 2) return null;
 
-  let validIndices = x.reduce(
+  // Identify indices of valid values (non-NaN)
+  const validIndices = x.reduce(
     (a, o, i) => (Number.isNaN(o) ? a : a.concat(i)),
     []
   );
 
-  // NOTE:  max and min calculations need to be tolerant of missing values
-  let max = x.filter((o) => !Number.isNaN(o)).reduce((a, o) => (o > a ? o : a));
-  let min = x.filter((o) => !Number.isNaN(o)).reduce((a, o) => (o &lt; a ? o : a));
-  let scaledRateOfChange = (max - min) / max;
-  let weightFactor =
+  // Calculate min and max while ignoring NaN
+  const validValues = x.filter((o) => !Number.isNaN(o));
+  if (validValues.length === 0) return null;
+
+  const max = validValues.reduce((a, o) => (o > a ? o : a));
+  const min = validValues.reduce((a, o) => (o &lt; a ? o : a));
+
+  // Compute "scaled rate of change" = (max - min) / max
+  const scaledRateOfChange = (max - min) / max;
+
+  // Convert scaled rate into a weight factor within the range [0.5, 1.0]
+  const weightFactor =
     1 - scaledRateOfChange &lt; 0.5 ? 0.5 : 1 - scaledRateOfChange;
 
-  // TODO:  Check for any valid values before attempting to reduce.
-  // TODO:  If all NaN, then simply return null.
+  // Compute weighted values, applying less weight to older values
+  const weightedValues = x
+    .map((o, i) => o * Math.pow(weightFactor, i))
+    .filter((o) => !Number.isNaN(o));
 
-  let weightedValues = x
-    .map((o, i) => o * Math.pow(weightFactor, i)) // maps onto an array including NaN
-    .filter((x) => !Number.isNaN(x)); // remove NaN before calculating sum
+  if (weightedValues.length === 0) return null;
 
-  let weightedSum = null;
-  if (weightedValues.length == 0) {
-    return null;
-  } else {
-    weightedSum = weightedValues.reduce((a, o) => a + o);
-  }
+  const weightedSum = weightedValues.reduce((a, o) => a + o);
 
-  let weightFactorSum = validIndices
-    .map((o) => Math.pow(weightFactor, o))
+  // Compute the sum of weights used for normalization
+  const weightFactorSum = validIndices
+    .map((i) => Math.pow(weightFactor, i))
     .reduce((a, o) => a + o);
 
+  // Final NowCast value, rounded to 1 decimal place
   let returnVal = parseFloat((weightedSum / weightFactorSum).toFixed(1));
 
-  // Convert NaN back to null
+  // If the result is not a number, return null
   returnVal = Number.isNaN(returnVal) ? null : returnVal;
+
   return returnVal;
 }
 </code></pre>
@@ -134,7 +144,7 @@ function nowcastPM(x) {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Tue Apr 02 2024 15:12:53 GMT-0700 (Pacific Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Wed Jun 18 2025 14:27:15 GMT-0700 (Pacific Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

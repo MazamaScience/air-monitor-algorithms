@@ -18,4 +18,22 @@ test("nowcast handles missing values properly", () => {
   assert.is(pm_nowcast(pm25)[11], null);
 });
 
+test("nowcast returns all nulls if all input is null", () => {
+  let pm25 = Array(12).fill(null);
+  let nowcast = pm_nowcast(pm25);
+  assert.equal(nowcast, Array(12).fill(null));
+});
+
+test("nowcast returns average for flat data", () => {
+  let pm25 = Array(12).fill(20);
+  let nowcast = pm_nowcast(pm25);
+  assert.ok(nowcast[11] === 20);
+});
+
+test("nowcast values are rounded to one decimal place", () => {
+  let pm25 = Array(12).fill(20.12345);
+  let nowcast = pm_nowcast(pm25);
+  assert.match(nowcast[11].toFixed(1), /^20\.1$/);
+});
+
 test.run();

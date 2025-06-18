@@ -1,53 +1,76 @@
 # air-monitor-algorithms
 
-A package containing algorithms used in the processing of hourly time series data.
-Initial use cases include air quality monitoring time series.
+Algorithms for processing hourly time series data, with an initial focus on
+air quality monitoring applications.
 
-This package is a dependency of the
-[air-monitor](https://github.com/MazamaScience/air-monitor)
-package for working with air quality monitoring data archives hosted by the
-US Forest Service.
+This package supports the
+[air-monitor](https://github.com/MazamaScience/air-monitor) ecosystem, which
+works with air quality monitoring data archives hosted by the US Forest
+Service.
 
-**NOTE:** A core assumption of the "air-monitor" data model is that all time
-series data are on a regular hourly axis with no gaps. When working with this
-javascript package, missing values should be indicated by `null`.
+> **Note:** All time series data are assumed to be on a regular hourly axis
+> with no gaps. Missing values should be represented as `null`.
 
-Important functions for data analysis include:
+## Features
 
-- `dailyStats()` -- Converts time series data into local time daily statistics.
-- `diurnalStats()` -- Converts time series data into local time statistics by hour-of-day.
-- `pm_nowcast()` -- Applies the _Nowcast_ algorithm to PM2.5 or PM10 time series data.
-- `trimDate()` -- Returns an object with time series data trimmed to local time full days.
+High-level analysis functions:
 
-Low level utility functions for sane array manipulation in javascript include:
+- `dailyStats(datetime, x, timezone)`
+  Returns local-time daily statistics from hourly data.
 
-- `arrayCount()` -- Returns the count of non-missing values in an array.
-- `arraySum()` -- Returns the sum of non-missing values in an array.
-- `arrayMin()` -- Returns the minimum of non-missing values in an array.
-- `arrayMean()` -- Returns the mean of non-missing values in an array.
-- `arrayMax()` -- Returns the maximum of non-missing values in an array.
+- `diurnalStats(datetime, x, timezone, dayCount)`
+  Returns local-time hourly averages from the most recent `dayCount` days.
 
-## Usage
+- `pm_nowcast(pm)`
+  Calculates EPA-style NowCast values from hourly PM2.5 or PM10 data.
 
-The package can be installed with `npm`:
+- `trimDate(datetime, x, timezone)`
+  Trims input to full local-time days (midnight to midnight).
+
+Array utility functions:
+
+- `arrayCount(x)` — Count of non-missing (`!= null`) values
+- `arraySum(x)` — Sum of valid values
+- `arrayMin(x)` — Minimum valid value
+- `arrayMean(x)` — Mean of valid values
+- `arrayMax(x)` — Maximum valid value
+
+## Installation
 
 ```
+# bash
 npm install github:MazamaScience/air-monitor-algorithms
 ```
+## Usage
 
-This package is provided as an ES Module intended for use in other modules or
-in Svelte and Vue applications. Here is an example of how to import functions
-from this module:
+This ES module can be used in modern JavaScript projects, including Svelte
+and Vue apps:
 
 ```
 import {
   dailyStats,
-  diurnalStats,
-  pm_nowcast,
+  pm_nowcast
 } from "air-monitor-algorithms";
-...
+
+// Example: Calculate daily means from hourly PM2.5 readings
+const datetime = [];
+const x = [];
+
+// Generate fake hourly data for 3 days
+for (let i = 0; i < 72; i++) {
+  datetime.push(new Date(2023, 6, 1, i)); // July 1st, hourly
+  x.push(50 + Math.sin(i / 3) * 10);      // sinusoidal variation
+}
+
+// Calculate daily statistics in the 'America/Los_Angeles' timezone
+const daily = dailyStats(datetime, x, "America/Los_Angeles");
+console.log(daily.mean); // → [meanDay1, meanDay2, meanDay3]
+
+// Apply NowCast to the hourly data
+const nowcast = pm_nowcast(x);
+console.log(nowcast.slice(-5)); // → last 5 hourly NowCast values
 ```
 
----
+## Project Support
 
 This project is supported by the [USFS AirFire](https://www.airfire.org) group.

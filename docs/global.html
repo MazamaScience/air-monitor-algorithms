@@ -112,8 +112,8 @@
 
 
 <div class="description">
-    <p>Return the count of valid values an array, ignoring any non-numeric values
-such as <code>NaN</code> or <code>null</code>.</p>
+    <p>arrayCount</p>
+<p>Count the number of valid numeric values in the array.</p>
 </div>
 
 
@@ -155,7 +155,7 @@ such as <code>NaN</code> or <code>null</code>.</p>
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;number></span>
+<span class="param-type">Array.&lt;*></span>
 
 
             
@@ -165,7 +165,7 @@ such as <code>NaN</code> or <code>null</code>.</p>
 
             
 
-            <td class="description last"><p>Array of values.</p></td>
+            <td class="description last"><p>Input array.</p></td>
         </tr>
 
     
@@ -206,7 +206,7 @@ such as <code>NaN</code> or <code>null</code>.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line79">line 79</a>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line73">line 73</a>
     </li></ul></dd>
     
 
@@ -235,7 +235,9 @@ such as <code>NaN</code> or <code>null</code>.</p>
 
         
 <div class="param-desc">
-    <p>Count of numeric values.</p>
+    <ul>
+<li>Count of numbers (excluding nulls and invalid values).</li>
+</ul>
 </div>
 
 
@@ -272,8 +274,9 @@ such as <code>NaN</code> or <code>null</code>.</p>
 
 
 <div class="description">
-    <p>Return the maximum value in an array, ignoring any non-numeric values such as
-<code>NaN</code> or <code>null</code>. If all values are non-numeric, <code>null</code> is returned.</p>
+    <p>arrayMax</p>
+<p>Return the largest number from the array, ignoring any non-numeric values.
+Returns null if no valid numbers are present.</p>
 </div>
 
 
@@ -315,7 +318,7 @@ such as <code>NaN</code> or <code>null</code>.</p>
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;number></span>
+<span class="param-type">Array.&lt;*></span>
 
 
             
@@ -325,7 +328,7 @@ such as <code>NaN</code> or <code>null</code>.</p>
 
             
 
-            <td class="description last"><p>Array of values.</p></td>
+            <td class="description last"><p>Input array.</p></td>
         </tr>
 
     
@@ -395,7 +398,9 @@ such as <code>NaN</code> or <code>null</code>.</p>
 
         
 <div class="param-desc">
-    <p>Maximum numeric value or null.</p>
+    <ul>
+<li>Maximum number or null if none found.</li>
+</ul>
 </div>
 
 
@@ -435,8 +440,9 @@ such as <code>NaN</code> or <code>null</code>.</p>
 
 
 <div class="description">
-    <p>Return the mean of an array, ignoring any non-numeric values such as
-<code>NaN</code> or <code>null</code>. If all values are non-numeric, <code>null</code> is returned.</p>
+    <p>arrayMean</p>
+<p>Calculate the average (mean) of valid numbers in the array.
+Returns null if no valid numbers are present.</p>
 </div>
 
 
@@ -478,7 +484,7 @@ such as <code>NaN</code> or <code>null</code>.</p>
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;number></span>
+<span class="param-type">Array.&lt;*></span>
 
 
             
@@ -488,7 +494,7 @@ such as <code>NaN</code> or <code>null</code>.</p>
 
             
 
-            <td class="description last"><p>Array of values.</p></td>
+            <td class="description last"><p>Input array.</p></td>
         </tr>
 
     
@@ -529,7 +535,7 @@ such as <code>NaN</code> or <code>null</code>.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line109">line 109</a>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line99">line 99</a>
     </li></ul></dd>
     
 
@@ -558,7 +564,9 @@ such as <code>NaN</code> or <code>null</code>.</p>
 
         
 <div class="param-desc">
-    <p>Mean of numeric values or null.</p>
+    <ul>
+<li>Mean of valid values or null.</li>
+</ul>
 </div>
 
 
@@ -598,8 +606,9 @@ such as <code>NaN</code> or <code>null</code>.</p>
 
 
 <div class="description">
-    <p>Return the minimum value in an array, ignoring any non-numeric values such as
-<code>NaN</code> or <code>null</code>. If all values are non-numeric, <code>null</code> is returned.</p>
+    <p>arrayMin</p>
+<p>Return the smallest number from the array, ignoring any non-numeric values.
+Returns null if no valid numbers are present.</p>
 </div>
 
 
@@ -641,7 +650,7 @@ such as <code>NaN</code> or <code>null</code>.</p>
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;number></span>
+<span class="param-type">Array.&lt;*></span>
 
 
             
@@ -651,7 +660,7 @@ such as <code>NaN</code> or <code>null</code>.</p>
 
             
 
-            <td class="description last"><p>Array of values.</p></td>
+            <td class="description last"><p>Input array.</p></td>
         </tr>
 
     
@@ -692,7 +701,7 @@ such as <code>NaN</code> or <code>null</code>.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line41">line 41</a>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line46">line 46</a>
     </li></ul></dd>
     
 
@@ -721,7 +730,9 @@ such as <code>NaN</code> or <code>null</code>.</p>
 
         
 <div class="param-desc">
-    <p>Minimum numeric value or null.</p>
+    <ul>
+<li>Minimum number or null if none found.</li>
+</ul>
 </div>
 
 
@@ -761,8 +772,8 @@ such as <code>NaN</code> or <code>null</code>.</p>
 
 
 <div class="description">
-    <p>Return the sum of an array, ignoring any non-numeric values such as
-<code>NaN</code> or <code>null</code>. If all values are non-numeric, <code>null</code> is returned.</p>
+    <p>arraySum</p>
+<p>Sum all valid numeric values in the array. Returns null if all values are invalid.</p>
 </div>
 
 
@@ -804,7 +815,7 @@ such as <code>NaN</code> or <code>null</code>.</p>
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;number></span>
+<span class="param-type">Array.&lt;*></span>
 
 
             
@@ -814,7 +825,7 @@ such as <code>NaN</code> or <code>null</code>.</p>
 
             
 
-            <td class="description last"><p>Array of values.</p></td>
+            <td class="description last"><p>Input array.</p></td>
         </tr>
 
     
@@ -855,7 +866,7 @@ such as <code>NaN</code> or <code>null</code>.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line94">line 94</a>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line85">line 85</a>
     </li></ul></dd>
     
 
@@ -884,7 +895,9 @@ such as <code>NaN</code> or <code>null</code>.</p>
 
         
 <div class="param-desc">
-    <p>Sum of numeric values or null.</p>
+    <ul>
+<li>Sum of numbers or null if no valid values.</li>
+</ul>
 </div>
 
 
@@ -924,14 +937,14 @@ such as <code>NaN</code> or <code>null</code>.</p>
 
 
 <div class="description">
-    <p>Calculates daily statistics for the time series specified by <code>datetime</code> and <code>x</code>.</p>
-<p>The returned object contains five properties:</p>
+    <p>Calculate daily statistics over a time series of hourly values.</p>
+<p>Returns five arrays of daily values:</p>
 <ul>
-<li>datetime -- Array of date objects specifying the starting hour of each day.</li>
-<li>count -- Array of daily counts of non-missing values.</li>
-<li>min -- Array of daily minimum values.</li>
-<li>mean -- Array of daily mean values.</li>
-<li>max -- Array of daily maximum values.</li>
+<li>datetime -- Date object marking the start of each day (local time)</li>
+<li>count    -- Number of valid hourly values each day</li>
+<li>min      -- Minimum value each day</li>
+<li>mean     -- Mean value each day</li>
+<li>max      -- Maximum value each day</li>
 </ul>
 </div>
 
@@ -984,8 +997,7 @@ such as <code>NaN</code> or <code>null</code>.</p>
 
             
 
-            <td class="description last"><p>Regular hourly axis (no missing hours)
-representing the time associated with each measurement.</p></td>
+            <td class="description last"><p>Hourly UTC timestamps.</p></td>
         </tr>
 
     
@@ -1008,7 +1020,7 @@ representing the time associated with each measurement.</p></td>
 
             
 
-            <td class="description last"><p>Array of hourly measurements.</p></td>
+            <td class="description last"><p>Array of hourly values.</p></td>
         </tr>
 
     
@@ -1031,7 +1043,7 @@ representing the time associated with each measurement.</p></td>
 
             
 
-            <td class="description last"><p>Olson time zone to use as &quot;local time&quot;.</p></td>
+            <td class="description last"><p>Olson time zone (e.g. &quot;America/Los_Angeles&quot;).</p></td>
         </tr>
 
     
@@ -1072,7 +1084,7 @@ representing the time associated with each measurement.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dailyStats.js.html">dailyStats.js</a>, <a href="dailyStats.js.html#line29">line 29</a>
+        <a href="dailyStats.js.html">dailyStats.js</a>, <a href="dailyStats.js.html#line27">line 27</a>
     </li></ul></dd>
     
 
@@ -1101,8 +1113,9 @@ representing the time associated with each measurement.</p></td>
 
         
 <div class="param-desc">
-    <p>An object with <code>datetime</code>, <code>count</code>, <code>min</code>, <code>mean</code> and <code>max</code>
-properties.</p>
+    <ul>
+<li>Object with datetime, count, min, mean, and max arrays.</li>
+</ul>
 </div>
 
 
@@ -1139,17 +1152,16 @@ properties.</p>
 
 
 <div class="description">
-    <p>Calculates diurnal averages for the time series specified by <code>datetime</code> and <code>x</code>.</p>
-<p>The returned object contains two properties:</p>
+    <p>Calculate hourly (diurnal) statistics over recent days.</p>
+<p>Returns five arrays of hourly values:</p>
 <ul>
-<li>hour -- Array of local time hours [0-24].</li>
-<li>count -- Array of hour-of-day counts of non-missing values.</li>
-<li>min -- Array of hour-of-day minimum values.</li>
-<li>mean -- Array of hour-of-day mean values.</li>
-<li>max -- Array of hour-of-day maximum values</li>
+<li>hour  -- Local-time hour of day [0–23]</li>
+<li>count -- Number of non-missing values per hour</li>
+<li>min   -- Minimum value at each hour</li>
+<li>mean  -- Mean value at each hour</li>
+<li>max   -- Maximum value at each hour</li>
 </ul>
-<p>By default, statistics are calculated using data from the most recent 7 days
-in the <code>datetime</code> array.</p>
+<p>By default, the most recent 7 full days are used.</p>
 </div>
 
 
@@ -1201,8 +1213,7 @@ in the <code>datetime</code> array.</p>
 
             
 
-            <td class="description last"><p>Regular hourly axis (no missing hours)
-representing the time associated with each measurement.</p></td>
+            <td class="description last"><p>Hourly timestamps (UTC).</p></td>
         </tr>
 
     
@@ -1225,7 +1236,7 @@ representing the time associated with each measurement.</p></td>
 
             
 
-            <td class="description last"><p>Array of hourly measurements.</p></td>
+            <td class="description last"><p>Matching array of values (e.g. PM2.5).</p></td>
         </tr>
 
     
@@ -1248,7 +1259,7 @@ representing the time associated with each measurement.</p></td>
 
             
 
-            <td class="description last"><p>Olson time zone to use as &quot;local time&quot;.</p></td>
+            <td class="description last"><p>Olson timezone string (e.g. &quot;America/Los_Angeles&quot;).</p></td>
         </tr>
 
     
@@ -1271,7 +1282,7 @@ representing the time associated with each measurement.</p></td>
 
             
 
-            <td class="description last"><p>Number of most recent days to use.</p></td>
+            <td class="description last"><p>Number of days to include (default: 7).</p></td>
         </tr>
 
     
@@ -1312,7 +1323,7 @@ representing the time associated with each measurement.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="diurnalStats.js.html">diurnalStats.js</a>, <a href="diurnalStats.js.html#line25">line 25</a>
+        <a href="diurnalStats.js.html">diurnalStats.js</a>, <a href="diurnalStats.js.html#line23">line 23</a>
     </li></ul></dd>
     
 
@@ -1341,7 +1352,9 @@ representing the time associated with each measurement.</p></td>
 
         
 <div class="param-desc">
-    <p>Object with <code>hour</code>, <code>count</code>, <code>min</code>, <code>mean</code> and <code>max</code> properties.</p>
+    <ul>
+<li>Object with hour, count, min, mean, and max arrays.</li>
+</ul>
 </div>
 
 
@@ -1370,7 +1383,7 @@ representing the time associated with each measurement.</p></td>
     
 
     
-    <h4 class="name" id="pm_nowcast"><span class="type-signature"></span>pm_nowcast<span class="signature">(pm)</span><span class="type-signature"> &rarr; {Array.&lt;number>}</span></h4>
+    <h4 class="name" id="pm_nowcast"><span class="type-signature"></span>pm_nowcast<span class="signature">(pm)</span><span class="type-signature"> &rarr; {Array.&lt;(number|null)>}</span></h4>
     
 
     
@@ -1378,9 +1391,11 @@ representing the time associated with each measurement.</p></td>
 
 
 <div class="description">
-    <p>Returns an array of NowCast values derived from the incoming time series.</p>
-<p><strong>NOTE:</strong> Incoming data must be on an hourly axis with no gaps. Missing
-values should be represented by 'null'.</p>
+    <p>Calculate an array of NowCast values from hourly PM measurements.</p>
+<p>Uses a 12-hour rolling window and the EPA NowCast algorithm to calculate
+weighted averages. Missing values should be represented by <code>null</code>.</p>
+<p>The returned array is the same length as the input, but early entries
+may contain <code>null</code> due to insufficient data.</p>
 </div>
 
 
@@ -1422,7 +1437,7 @@ values should be represented by 'null'.</p>
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;number></span>
+<span class="param-type">Array.&lt;(number|null)></span>
 
 
             
@@ -1432,7 +1447,7 @@ values should be represented by 'null'.</p>
 
             
 
-            <td class="description last"><p>Array of hourly PM2.5 or PM10  measurements.</p></td>
+            <td class="description last"><p>Hourly PM2.5 or PM10 values (no gaps).</p></td>
         </tr>
 
     
@@ -1473,7 +1488,7 @@ values should be represented by 'null'.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="nowcast.js.html">nowcast.js</a>, <a href="nowcast.js.html#line12">line 12</a>
+        <a href="nowcast.js.html">nowcast.js</a>, <a href="nowcast.js.html#line15">line 15</a>
     </li></ul></dd>
     
 
@@ -1502,7 +1517,9 @@ values should be represented by 'null'.</p>
 
         
 <div class="param-desc">
-    <p>Array of NowCast values.</p>
+    <ul>
+<li>Array of NowCast values, rounded to 1 decimal place.</li>
+</ul>
 </div>
 
 
@@ -1513,7 +1530,7 @@ values should be represented by 'null'.</p>
     </dt>
     <dd>
         
-<span class="param-type">Array.&lt;number></span>
+<span class="param-type">Array.&lt;(number|null)></span>
 
 
     </dd>
@@ -1531,7 +1548,7 @@ values should be represented by 'null'.</p>
     
 
     
-    <h4 class="name" id="roundAndUseNull"><span class="type-signature"></span>roundAndUseNull<span class="signature">(x, digits)</span><span class="type-signature"> &rarr; {Array.&lt;number>}</span></h4>
+    <h4 class="name" id="roundAndUseNull"><span class="type-signature"></span>roundAndUseNull<span class="signature">(x, digits)</span><span class="type-signature"> &rarr; {Array.&lt;(number|null)>}</span></h4>
     
 
     
@@ -1539,9 +1556,10 @@ values should be represented by 'null'.</p>
 
 
 <div class="description">
-    <p>Convert an array of values to an array rounded to <code>digits</code> decimal places
-and using <code>null</code> as the default missing value. Missing values are
-any members of <code>x</code> with values of <code>undefined</code>, <code>NaN</code> or <code>null</code>.</p>
+    <p>roundAndUseNull</p>
+<p>Convert an array of numbers to an array where each number is rounded to a fixed
+number of decimal places. Any value that is not a valid number (NaN, undefined, null)
+will be converted to <code>null</code>.</p>
 </div>
 
 
@@ -1593,7 +1611,7 @@ any members of <code>x</code> with values of <code>undefined</code>, <code>NaN</
 
             
 
-            <td class="description last"><p>Array of values.</p></td>
+            <td class="description last"><p>The input array of values.</p></td>
         </tr>
 
     
@@ -1616,7 +1634,7 @@ any members of <code>x</code> with values of <code>undefined</code>, <code>NaN</
 
             
 
-            <td class="description last"><p>Number of digits to retain after the decimal point.</p></td>
+            <td class="description last"><p>Number of decimal places to round to (default is 1).</p></td>
         </tr>
 
     
@@ -1657,7 +1675,7 @@ any members of <code>x</code> with values of <code>undefined</code>, <code>NaN</
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line10">line 10</a>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line12">line 12</a>
     </li></ul></dd>
     
 
@@ -1686,7 +1704,9 @@ any members of <code>x</code> with values of <code>undefined</code>, <code>NaN</
 
         
 <div class="param-desc">
-    <p>Array of values.</p>
+    <ul>
+<li>New array with rounded values or nulls.</li>
+</ul>
 </div>
 
 
@@ -1697,7 +1717,7 @@ any members of <code>x</code> with values of <code>undefined</code>, <code>NaN</
     </dt>
     <dd>
         
-<span class="param-type">Array.&lt;number></span>
+<span class="param-type">Array.&lt;(number|null)></span>
 
 
     </dd>
@@ -1723,12 +1743,9 @@ any members of <code>x</code> with values of <code>undefined</code>, <code>NaN</
 
 
 <div class="description">
-    <p>Returns an object trimmed to full local time days. Any partial days are
-discarded. The returned object contains two properties:</p>
-<ul>
-<li>datetime -- the original datetime array trimmed to full days</li>
-<li>x -- the original x array trimmed to full days</li>
-</ul>
+    <p>Trim a time series to full local calendar days.</p>
+<p>Discards any partial days at the beginning or end of the array. Uses the local
+time zone to determine day boundaries.</p>
 </div>
 
 
@@ -1780,8 +1797,7 @@ discarded. The returned object contains two properties:</p>
 
             
 
-            <td class="description last"><p>Regular hourly axis representing the time associated
-with each measurement.</p></td>
+            <td class="description last"><p>Array of Date objects (hourly).</p></td>
         </tr>
 
     
@@ -1804,7 +1820,7 @@ with each measurement.</p></td>
 
             
 
-            <td class="description last"><p>Array of hourly measurements.</p></td>
+            <td class="description last"><p>Array of measurements (same length as datetime).</p></td>
         </tr>
 
     
@@ -1827,7 +1843,7 @@ with each measurement.</p></td>
 
             
 
-            <td class="description last"><p>Olson time zone to use as &quot;local time&quot;.</p></td>
+            <td class="description last"><p>IANA/Olson timezone (e.g. &quot;America/Los_Angeles&quot;).</p></td>
         </tr>
 
     
@@ -1868,7 +1884,7 @@ with each measurement.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="trimDate.js.html">trimDate.js</a>, <a href="trimDate.js.html#line16">line 16</a>
+        <a href="trimDate.js.html">trimDate.js</a>, <a href="trimDate.js.html#line14">line 14</a>
     </li></ul></dd>
     
 
@@ -1897,7 +1913,9 @@ with each measurement.</p></td>
 
         
 <div class="param-desc">
-    <p>Object with <code>datetime</code> and <code>x</code> properties.</p>
+    <ul>
+<li>Object with <code>datetime</code> and <code>x</code> arrays trimmed to full days.</li>
+</ul>
 </div>
 
 
@@ -1926,7 +1944,7 @@ with each measurement.</p></td>
     
 
     
-    <h4 class="name" id="useNull"><span class="type-signature"></span>useNull<span class="signature">(x)</span><span class="type-signature"> &rarr; {Array.&lt;number>}</span></h4>
+    <h4 class="name" id="useNull"><span class="type-signature"></span>useNull<span class="signature">(x)</span><span class="type-signature"> &rarr; {Array.&lt;(number|null)>}</span></h4>
     
 
     
@@ -1934,8 +1952,9 @@ with each measurement.</p></td>
 
 
 <div class="description">
-    <p>Convert an array of values to an array where all values of <code>undefined</code> or
-<code>NaN</code> have been replaced by <code>null</code>.</p>
+    <p>useNull</p>
+<p>Convert an array so that any undefined, null, or non-numeric (NaN) values
+are replaced by <code>null</code>.</p>
 </div>
 
 
@@ -1977,7 +1996,7 @@ with each measurement.</p></td>
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;number></span>
+<span class="param-type">Array.&lt;*></span>
 
 
             
@@ -1987,7 +2006,7 @@ with each measurement.</p></td>
 
             
 
-            <td class="description last"><p>Array of values.</p></td>
+            <td class="description last"><p>Input array with possibly invalid values.</p></td>
         </tr>
 
     
@@ -2028,7 +2047,7 @@ with each measurement.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line27">line 27</a>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line33">line 33</a>
     </li></ul></dd>
     
 
@@ -2057,7 +2076,9 @@ with each measurement.</p></td>
 
         
 <div class="param-desc">
-    <p>Array of values.</p>
+    <ul>
+<li>Cleaned array with only numbers or nulls.</li>
+</ul>
 </div>
 
 
@@ -2068,7 +2089,7 @@ with each measurement.</p></td>
     </dt>
     <dd>
         
-<span class="param-type">Array.&lt;number></span>
+<span class="param-type">Array.&lt;(number|null)></span>
 
 
     </dd>
@@ -2102,7 +2123,7 @@ with each measurement.</p></td>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Tue Apr 02 2024 15:12:53 GMT-0700 (Pacific Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Wed Jun 18 2025 14:27:15 GMT-0700 (Pacific Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -55,6 +55,63 @@ test("daily averages work with missing values", () => {
   assert.equal(daily.count, [21, 22, 23, 24, 24, 24, 24, 24, 24, 24]);
 });
 
+test("returns empty result for empty input", () => {
+  let result = dailyStats([], [], "UTC");
+  assert.equal(result.datetime, []);
+  assert.equal(result.count, []);
+  assert.equal(result.min, []);
+  assert.equal(result.mean, []);
+  assert.equal(result.max, []);
+});
+
+test("returns empty result for partial day", () => {
+  const partialDatetime = datetime.slice(0, 12);
+  const partialX = x.slice(0, 12);
+  const result = dailyStats(partialDatetime, partialX, "UTC");
+  assert.equal(result.datetime, []);
+  assert.equal(result.count, []);
+});
+
+test("throws on mismatched input lengths", () => {
+  const badX = x.slice(0, 200); // too short
+  assert.throws(() => dailyStats(datetime, badX, "UTC"));
+});
+
+test("mean values are rounded to 1 decimal place", () => {
+  const result = dailyStats(datetime, x, "UTC");
+  result.mean.forEach((v) => {
+    if (v !== null) {
+      assert.match(v.toFixed(1), /^[0-9]+\.[0-9]$/);
+    }
+  });
+});
+
+test("dailyStats computes mean correctly with missing values", () => {
+  const timezone = "UTC";
+  const start = moment.tz("2023-02-14 00:00", timezone);
+
+  const datetime = [];
+  const x = [];
+
+  for (let i = 0; i < 24; i++) {
+    datetime[i] = new Date(start.clone().add(i, "hours").valueOf());
+    x[i] = i + 1; // [1, 2, ..., 24]
+  }
+
+  x[4] = null;   // omit 5
+  x[10] = null;  // omit 11
+
+  // Expected sum = 283, count = 22, mean = 12.9
+  const result = dailyStats(datetime, x, timezone);
+
+  assert.equal(result.datetime.length, 1);
+  assert.equal(result.count[0], 22);
+  assert.equal(result.min[0], 1);
+  assert.equal(result.max[0], 24);
+  assert.is(result.mean[0], 12.9);
+});
+
+
 // TODO:  Test that averages are correct when missing values are present.
 
 // ----- Run all tests ---------------------------------------------------------

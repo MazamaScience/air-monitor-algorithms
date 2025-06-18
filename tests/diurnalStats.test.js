@@ -195,6 +195,47 @@ test("diurnal averages work with missing values", () => {
   assert.equal(diurnal.max, myMax);
 });
 
+test("returns empty result when given no data", () => {
+  const result = diurnalStats([], [], "UTC");
+  assert.equal(result.hour, []);
+  assert.equal(result.count, []);
+  assert.equal(result.min, []);
+  assert.equal(result.mean, []);
+  assert.equal(result.max, []);
+});
+
+test("returns empty result for partial day of data", () => {
+  const dt = datetime.slice(0, 12);
+  const y = x.slice(0, 12);
+  const result = diurnalStats(dt, y, "UTC");
+  assert.equal(result.hour, []);
+  assert.equal(result.count, []);
+});
+
+test("mean values are rounded to 1 decimal place", () => {
+  const result = diurnalStats(datetime, x, "UTC");
+  result.mean.forEach((v) => {
+    if (v !== null) {
+      assert.match(v.toFixed(1), /^[0-9]+\.[0-9]$/);
+    }
+  });
+});
+
+test("min and max differ when input is not flat", () => {
+  const flat = Array(24 * 7).fill(10);
+  const flatDatetime = datetime.slice(0, flat.length);
+  const result = diurnalStats(flatDatetime, flat, "UTC");
+  result.min.forEach((minVal, i) => {
+    assert.is(minVal, 10);
+    assert.is(result.max[i], 10);
+  });
+
+  const notFlat = flat.slice();
+  notFlat[23] = 20; // spike at end of day 1
+  const result2 = diurnalStats(flatDatetime, notFlat, "UTC");
+  assert.ok(result2.max[23] > result2.min[23]);
+});
+
 // TODO:  Create a test showing that min and max can be different
 
 // ----- Run all tests ---------------------------------------------------------

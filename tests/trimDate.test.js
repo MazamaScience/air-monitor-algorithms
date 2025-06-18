@@ -12,7 +12,7 @@ let x = [];
 // ----- Test trimming in different timezones ----------------------------------
 
 // Precisely 10 days worth of data
-for (var i = 0; i < 240; i++) {
+for (let i = 0; i < 240; i++) {
   datetime[i] = new Date(start + i * 3600 * 1000);
   let val = 10 + 5 * Math.sin((i * Math.PI) / 12) + Math.random() * 6 - 3;
   x[i] = Math.round(val * 10) / 10;
@@ -60,7 +60,7 @@ test("trimming Date objects works for 'America/New_York'", () => {
 // ----- Test passing in moment objects ----------------------------------------
 
 // Precisely 10 days worth of data
-for (var i = 0; i < 240; i++) {
+for (let i = 0; i < 240; i++) {
   datetime[i] = moment.tz(start + i * 3600 * 1000, "UTC");
   let val = 10 + 5 * Math.sin((i * Math.PI) / 12) + Math.random() * 6 - 3;
   x[i] = Math.round(val * 10) / 10;
@@ -90,6 +90,37 @@ test("trimming Date objects works for 'America/New_York'", () => {
   // UTC is 5 hours ahead of "America/New_York" during the winter
   assert.is(trimmed.datetime[0].valueOf(), datetime[5].valueOf());
   assert.is(trimmed.x[0], x[5]);
+});
+
+test("trimming ignores partial trailing days", () => {
+  let partialDatetime = datetime.slice(0, 238); // 238 < 10 full days
+  let partialX = x.slice(0, 238);
+  let timezone = "UTC";
+  let trimmed = trimDate(partialDatetime, partialX, timezone);
+  assert.is(trimmed.datetime.length, 216); // 9 full days
+});
+
+test("returns empty arrays for < 24 hours of data", () => {
+  const shortDatetime = datetime.slice(0, 10);
+  const shortX = x.slice(0, 10);
+  const trimmed = trimDate(shortDatetime, shortX, "UTC");
+  assert.equal(trimmed.datetime, []);
+  assert.equal(trimmed.x, []);
+});
+
+test("trimmed datetime and x arrays stay aligned", () => {
+  const timezone = "America/New_York";
+  const trimmed = trimDate(datetime, x, timezone);
+  for (let i = 0; i < trimmed.datetime.length; i++) {
+    const ts = trimmed.datetime[i].valueOf();
+    const originalIndex = datetime.findIndex((d) => d.valueOf() === ts);
+    assert.is(trimmed.x[i], x[originalIndex]);
+  }
+});
+
+test("throws on mismatched input lengths", () => {
+  const badX = x.slice(0, 100); // shorter than datetime
+  assert.throws(() => trimDate(datetime, badX, "UTC"));
 });
 
 // ----- Run all tests ---------------------------------------------------------

@@ -48,4 +48,46 @@ test("array math works properly", () => {
   assert.is(arrayMean(x_null), null);
 });
 
+test("array functions handle empty arrays", () => {
+  const empty = [];
+  assert.is(arrayMin(empty), null);
+  assert.is(arrayMax(empty), null);
+  assert.is(arrayCount(empty), 0);
+  assert.is(arraySum(empty), null);
+  assert.is(arrayMean(empty), null);
+});
+
+test("array functions handle all invalid values", () => {
+  const bad = [NaN, undefined, null];
+  assert.is(arrayMin(bad), null);
+  assert.is(arrayMax(bad), null);
+  assert.is(arrayCount(bad), 0);
+  assert.is(arraySum(bad), null);
+  assert.is(arrayMean(bad), null);
+});
+
+test("array functions handle single-value input", () => {
+  const x = [4];
+  assert.is(arrayMin(x), 4);
+  assert.is(arrayMax(x), 4);
+  assert.is(arrayCount(x), 1);
+  assert.is(arraySum(x), 4);
+  assert.is(arrayMean(x), 4);
+});
+
+test("roundAndUseNull handles edge rounding", () => {
+  const x = [0.4449, 0.445, 0.4451];
+  assert.equal(roundAndUseNull(x, 2), [0.44, 0.45, 0.45]);
+});
+
+test("roundAndUseNull handles large and negative numbers", () => {
+  const x = [1234.567, -987.654];
+  assert.equal(roundAndUseNull(x, 1), [1234.6, -987.7]);
+});
+
+test("useNull preserves already-valid numbers", () => {
+  const x = [0, 5, -3.2];
+  assert.equal(useNull(x), x);
+});
+
 test.run();
