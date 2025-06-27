@@ -4,16 +4,33 @@ import * as assert from "uvu/assert";
 import { DateTime } from "luxon";
 import { dailyStats } from "../src/index.js";
 
-// Start of Valentine's Day in Greenwich
-let start = DateTime.fromISO("2023-02-14T00:00:00", { zone: "UTC" });
+// // Start of Valentine's Day in Greenwich
+// let start = DateTime.fromISO("2023-02-14T00:00:00", { zone: "UTC" });
+// let datetime = [];
+// let x = [];
+
+// // Precisely 10 days worth of data
+// let day = 0;
+// for (var i = 0; i < 240; i++) {
+//   if (i % 24 === 0) day++;
+//   datetime[i] = new Date(start + i * 3600 * 1000);
+//   let val = day * 10 + 5 * Math.sin((i * Math.PI) / 12);
+//   x[i] = Math.round(val * 10) / 10;
+// }
+
+// Start of Valentine's Day in UTC
+let start = new Date(Date.UTC(2023, 1, 14, 0, 0, 0)); // Note: month is 0-indexed (1 = February)
+
 let datetime = [];
 let x = [];
 
-// Precisely 10 days worth of data
+// Precisely 10 days worth of data (240 hourly values)
 let day = 0;
-for (var i = 0; i < 240; i++) {
+for (let i = 0; i < 240; i++) {
   if (i % 24 === 0) day++;
-  datetime[i] = new Date(start + i * 3600 * 1000);
+  // Create hourly timestamps in UTC
+  datetime[i] = new Date(start.getTime() + i * 3600 * 1000);
+  // Generate value with sinusoidal pattern
   let val = day * 10 + 5 * Math.sin((i * Math.PI) / 12);
   x[i] = Math.round(val * 10) / 10;
 }
@@ -33,8 +50,8 @@ test("daily averages work for 'UTC'", () => {
 test("daily averages work for 'America/Chicago'", () => {
   let timezone = "America/Chicago";
   let daily = dailyStats(datetime, x, timezone);
-  let day0 = DateTime.fromISO("2023-02-14T00:00:00", { zone: "UTC" }).toJSDate();
-  let day1 = DateTime.fromISO("2023-02-15T00:00:00", { zone: "UTC" }).toJSDate();
+  let day0 = DateTime.fromISO("2023-02-14T00:00:00", { zone: "America/Chicago" }).toJSDate();
+  let day1 = DateTime.fromISO("2023-02-15T00:00:00", { zone: "America/Chicago" }).toJSDate();
   assert.equal(daily.datetime.slice(0, 2), [day0, day1]);
   assert.equal(daily.count, [24, 24, 24, 24, 24, 24, 24, 24, 24]);
   assert.equal(daily.min, [5, 15, 25, 35, 45, 55, 65, 75, 85]);
