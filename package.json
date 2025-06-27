@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/MazamaScience/air-monitor-algorithms#readme",
   "dependencies": {
-    "moment-timezone": "^0.5.40"
+    "luxon": "3.6.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.1",

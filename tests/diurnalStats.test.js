@@ -1,11 +1,11 @@
 import { test } from "uvu";
 import * as assert from "uvu/assert";
 
-import moment from "moment-timezone";
+import { DateTime } from "luxon";
 import { diurnalStats } from "../src/index.js";
 
 // Start of Valentine's Day in Greenwich
-let start = moment.tz("2023-02-14 00:00:00", "UTC");
+let start = DateTime.fromISO("2023-02-14T00:00:00", { zone: "UTC" });
 let datetime = [];
 let x = [];
 
@@ -14,7 +14,7 @@ let day = 0;
 for (var i = 0; i < 240; i++) {
   if (i % 24 === 0) day += 1;
   let plusOrMinus = day % 2 === 0 ? 1 : -1;
-  datetime[i] = new Date(start + i * 3600 * 1000);
+  datetime[i] = new Date(start.toMillis() + i * 3600 * 1000);
   let val = 10 + plusOrMinus * 5 * Math.sin((i * Math.PI) / 12);
   x[i] = Math.round(val * 10) / 10;
 }

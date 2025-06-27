@@ -1,19 +1,20 @@
 import { test } from "uvu";
 import * as assert from "uvu/assert";
 
-import moment from "moment-timezone";
+import { DateTime } from "luxon";
 import { trimDate } from "../src/index.js";
 
-// Start of Valentine's Day in Greenwich
-let start = moment.tz("2023-02-14 00:00:00", "UTC");
 let datetime = [];
 let x = [];
 
+// Start of Valentine's Day in UTC
+let start = new Date(Date.UTC(2023, 1, 14, 0, 0, 0)); // Months are 0-based: 1 = February
+
 // ----- Test trimming in different timezones ----------------------------------
 
-// Precisely 10 days worth of data
+// Precisely 10 days worth of hourly data (240 hours)
 for (let i = 0; i < 240; i++) {
-  datetime[i] = new Date(start + i * 3600 * 1000);
+  datetime[i] = new Date(start.getTime() + i * 3600 * 1000); // Add i hours
   let val = 10 + 5 * Math.sin((i * Math.PI) / 12) + Math.random() * 6 - 3;
   x[i] = Math.round(val * 10) / 10;
 }
@@ -21,11 +22,11 @@ for (let i = 0; i < 240; i++) {
 test("trimming Date objects works for 'UTC'", () => {
   let timezone = "UTC";
   let trimmed = trimDate(datetime, x, timezone);
-  let tz_start = moment.tz(trimmed.datetime[0], timezone);
-  let tz_end = moment.tz(trimmed.datetime[239], timezone);
+  let tz_start = DateTime.fromJSDate(trimmed.datetime[0], { zone: timezone});
+  let tz_end = DateTime.fromJSDate(trimmed.datetime[239], { zone: timezone});
   assert.is(trimmed.datetime.length, 240);
-  assert.is(tz_start.hours(), 0);
-  assert.is(tz_end.hours(), 23);
+  assert.is(tz_start.hour, 0);
+  assert.is(tz_end.hour, 23);
   // UTC is 8 hours ahead of "America/Los_Angeles" during the winter
   assert.is(trimmed.datetime[0].valueOf(), datetime[0].valueOf());
   assert.is(trimmed.x[0], x[0]);
@@ -34,11 +35,11 @@ test("trimming Date objects works for 'UTC'", () => {
 test("trimming Date objects works for 'America/Los_Angeles'", () => {
   let timezone = "America/Los_Angeles";
   let trimmed = trimDate(datetime, x, timezone);
-  let tz_start = moment.tz(trimmed.datetime[0], timezone);
-  let tz_end = moment.tz(trimmed.datetime[215], timezone);
+  let tz_start = DateTime.fromJSDate(trimmed.datetime[0], { zone: timezone});
+  let tz_end = DateTime.fromJSDate(trimmed.datetime[215], { zone: timezone});
   assert.is(trimmed.datetime.length, 216);
-  assert.is(tz_start.hours(), 0);
-  assert.is(tz_end.hours(), 23);
+  assert.is(tz_start.hour, 0);
+  assert.is(tz_end.hour, 23);
   // UTC is 8 hours ahead of "America/Los_Angeles" during the winter
   assert.is(trimmed.datetime[0].valueOf(), datetime[8].valueOf());
   assert.is(trimmed.x[0], x[8]);
@@ -47,21 +48,21 @@ test("trimming Date objects works for 'America/Los_Angeles'", () => {
 test("trimming Date objects works for 'America/New_York'", () => {
   let timezone = "America/New_York";
   let trimmed = trimDate(datetime, x, timezone);
-  let tz_start = moment.tz(trimmed.datetime[0], timezone);
-  let tz_end = moment.tz(trimmed.datetime[215], timezone);
+  let tz_start = DateTime.fromJSDate(trimmed.datetime[0], { zone: timezone});
+  let tz_end = DateTime.fromJSDate(trimmed.datetime[215], { zone: timezone});
   assert.is(trimmed.datetime.length, 216);
-  assert.is(tz_start.hours(), 0);
-  assert.is(tz_end.hours(), 23);
+  assert.is(tz_start.hour, 0);
+  assert.is(tz_end.hour, 23);
   // UTC is 5 hours ahead of "America/New_York" during the winter
   assert.is(trimmed.datetime[0].valueOf(), datetime[5].valueOf());
   assert.is(trimmed.x[0], x[5]);
 });
 
-// ----- Test passing in moment objects ----------------------------------------
+// ----- Test passing in Luxon DateTime objects --------------------------------
 
 // Precisely 10 days worth of data
 for (let i = 0; i < 240; i++) {
-  datetime[i] = moment.tz(start + i * 3600 * 1000, "UTC");
+  datetime[i] = DateTime.fromMillis(start.getTime() + i * 3600 * 1000, { zone: "UTC" })
   let val = 10 + 5 * Math.sin((i * Math.PI) / 12) + Math.random() * 6 - 3;
   x[i] = Math.round(val * 10) / 10;
 }
@@ -69,11 +70,11 @@ for (let i = 0; i < 240; i++) {
 test("trimming moment.tz objects works for 'America/Los_Angeles'", () => {
   let timezone = "America/Los_Angeles";
   let trimmed = trimDate(datetime, x, timezone);
-  let tz_start = moment.tz(trimmed.datetime[0], timezone);
-  let tz_end = moment.tz(trimmed.datetime[215], timezone);
+  let tz_start = DateTime.fromJSDate(trimmed.datetime[0], { zone: timezone});
+  let tz_end = DateTime.fromJSDate(trimmed.datetime[215], { zone: timezone});
   assert.is(trimmed.datetime.length, 216);
-  assert.is(tz_start.hours(), 0);
-  assert.is(tz_end.hours(), 23);
+  assert.is(tz_start.hour, 0);
+  assert.is(tz_end.hour, 23);
   // UTC is 8 hours ahead of "America/Los_Angeles" during the winter
   assert.is(trimmed.datetime[0].valueOf(), datetime[8].valueOf());
   assert.is(trimmed.x[0], x[8]);
@@ -82,11 +83,11 @@ test("trimming moment.tz objects works for 'America/Los_Angeles'", () => {
 test("trimming Date objects works for 'America/New_York'", () => {
   let timezone = "America/New_York";
   let trimmed = trimDate(datetime, x, timezone);
-  let tz_start = moment.tz(trimmed.datetime[0], timezone);
-  let tz_end = moment.tz(trimmed.datetime[215], timezone);
+  let tz_start = DateTime.fromJSDate(trimmed.datetime[0], { zone: timezone});
+  let tz_end = DateTime.fromJSDate(trimmed.datetime[215], { zone: timezone});
   assert.is(trimmed.datetime.length, 216);
-  assert.is(tz_start.hours(), 0);
-  assert.is(tz_end.hours(), 23);
+  assert.is(tz_start.hour, 0);
+  assert.is(tz_end.hour, 23);
   // UTC is 5 hours ahead of "America/New_York" during the winter
   assert.is(trimmed.datetime[0].valueOf(), datetime[5].valueOf());
   assert.is(trimmed.x[0], x[5]);

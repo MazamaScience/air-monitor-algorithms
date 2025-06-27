@@ -1,11 +1,11 @@
 import { test } from "uvu";
 import * as assert from "uvu/assert";
 
-import moment from "moment-timezone";
+import { DateTime } from "luxon";
 import { dailyStats } from "../src/index.js";
 
 // Start of Valentine's Day in Greenwich
-let start = moment.tz("2023-02-14 00:00:00", "UTC");
+let start = DateTime.fromISO("2023-02-14T00:00:00", { zone: "UTC" });
 let datetime = [];
 let x = [];
 
@@ -21,8 +21,8 @@ for (var i = 0; i < 240; i++) {
 test("daily averages work for 'UTC'", () => {
   let timezone = "UTC";
   let daily = dailyStats(datetime, x, timezone);
-  let day0 = new Date(moment.tz("2023-02-14 00:00:00", "UTC"));
-  let day1 = new Date(moment.tz("2023-02-15 00:00:00", "UTC"));
+  let day0 = DateTime.fromISO("2023-02-14T00:00:00", { zone: "UTC" }).toJSDate();
+  let day1 = DateTime.fromISO("2023-02-15T00:00:00", { zone: "UTC" }).toJSDate();
   assert.equal(daily.datetime.slice(0, 2), [day0, day1]);
   assert.equal(daily.count, [24, 24, 24, 24, 24, 24, 24, 24, 24, 24]);
   assert.equal(daily.min, [5, 15, 25, 35, 45, 55, 65, 75, 85, 95]);
@@ -33,8 +33,8 @@ test("daily averages work for 'UTC'", () => {
 test("daily averages work for 'America/Chicago'", () => {
   let timezone = "America/Chicago";
   let daily = dailyStats(datetime, x, timezone);
-  let day0 = new Date(moment.tz("2023-02-14 06:00:00", "UTC"));
-  let day1 = new Date(moment.tz("2023-02-15 06:00:00", "UTC"));
+  let day0 = DateTime.fromISO("2023-02-14T00:00:00", { zone: "UTC" }).toJSDate();
+  let day1 = DateTime.fromISO("2023-02-15T00:00:00", { zone: "UTC" }).toJSDate();
   assert.equal(daily.datetime.slice(0, 2), [day0, day1]);
   assert.equal(daily.count, [24, 24, 24, 24, 24, 24, 24, 24, 24]);
   assert.equal(daily.min, [5, 15, 25, 35, 45, 55, 65, 75, 85]);
@@ -88,13 +88,13 @@ test("mean values are rounded to 1 decimal place", () => {
 
 test("dailyStats computes mean correctly with missing values", () => {
   const timezone = "UTC";
-  const start = moment.tz("2023-02-14 00:00", timezone);
+  const start = DateTime.fromISO("2023-02-14T00:00:00", { zone: timezone });
 
   const datetime = [];
   const x = [];
 
   for (let i = 0; i < 24; i++) {
-    datetime[i] = new Date(start.clone().add(i, "hours").valueOf());
+    datetime[i] = start.plus({ hours: i }).toJSDate();
     x[i] = i + 1; // [1, 2, ..., 24]
   }
 

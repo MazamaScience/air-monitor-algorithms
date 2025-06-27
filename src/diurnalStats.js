@@ -1,4 +1,3 @@
-import moment from "moment-timezone";
 import { trimDate } from "./trimDate.js";
 import { roundAndUseNull, useNull } from "./utils.js";
 
@@ -24,7 +23,6 @@ export function diurnalStats(datetime, x, timezone, dayCount = 7) {
   // Trim to full local days
   const trimmed = trimDate(datetime, x, timezone);
 
-
   // Return empty result if no full days exist
   if (
     !Array.isArray(trimmed.datetime) ||
@@ -44,10 +42,6 @@ export function diurnalStats(datetime, x, timezone, dayCount = 7) {
   const fullDayCount = trimmed.datetime.length / 24;
   dayCount = fullDayCount < dayCount ? fullDayCount : dayCount;
   const startIndex = trimmed.datetime.length - dayCount * 24;
-
-  // Convert UTC datetimes to local hours [0–23]
-  const localTime = trimmed.datetime.map((o) => moment.tz(o, timezone));
-  const hours = localTime.map((o) => o.hours());
 
   // Clean data and mark valid values
   const values = useNull(trimmed.x);

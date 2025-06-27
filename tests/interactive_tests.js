@@ -3,13 +3,13 @@ import { trimDate } from "../src/index.js";
 import { dailyStats } from "../src/index.js";
 import { diurnalStats } from "../src/index.js";
 
-import moment from "moment-timezone";
+import { DateTime } from "luxon";
 
 let datetime = [];
 let x = [];
 let timezone = "America/Los_Angeles";
 
-let now = moment.tz("UTC").startOf("hour");
+let now = DateTime.utc().startOf("hour");
 
 for (var i = 0; i < 240; i++) {
   datetime[i] = new Date(now - (240 - i) * 3600 * 1000);
@@ -17,9 +17,9 @@ for (var i = 0; i < 240; i++) {
   x[i] = Math.round(val * 10) / 10;
 }
 
-let nowcast = pm_nowcast(x); // looks good
-
 let trimmed = trimDate(datetime, x, timezone);
+
+let nowcast = pm_nowcast(x); // looks good
 
 let daily = dailyStats(datetime, x, timezone);
 
