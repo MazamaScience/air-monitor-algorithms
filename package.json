@@ -16,6 +16,10 @@
   "keywords": [
     "'air-quality'"
   ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "author": "Jonathan Callahan",
   "license": "SEE LICENSE IN LICENSE",
   "bugs": {
