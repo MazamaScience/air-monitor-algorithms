@@ -4,9 +4,9 @@ import { DateTime } from "luxon";
  * Trim a time series to full local calendar days.
  *
  * Discards any partial days at the beginning or end of the array. Uses the local
- * time zone to determine day boundaries.
+ * time zone to determine day boundaries, but always returns timestamps in UTC.
  *
- * @param {Array.<Date|DateTime>} datetime - Array of Date or Luxon DateTime objects (hourly).
+ * @param {Array.<DateTime>} datetime - Array of Luxon DateTime objects (in UTC).
  * @param {Array.<number>} x - Array of measurements (same length as datetime).
  * @param {string} timezone - IANA/Olson timezone (e.g. "America/Los_Angeles").
  * @returns {object} - Object with `datetime` and `x` arrays trimmed to full days.
@@ -19,33 +19,31 @@ export function trimDate(datetime, x, timezone) {
     throw new Error("timezone must be a string.");
   }
 
-  // Convert each timestamp to a Luxon DateTime in the target time zone
-  const localHours = datetime.map((dt) => {
-    if (DateTime.isDateTime(dt)) {
-      return dt.setZone(timezone).hour;
-    } else if (dt instanceof Date) {
-      return DateTime.fromJSDate(dt, { zone: timezone }).hour;
-    } else {
-      throw new Error("datetime array must contain only Date or DateTime objects.");
+  for (const dt of datetime) {
+    if (!DateTime.isDateTime(dt)) {
+      throw new Error("All entries in datetime must be Luxon DateTime objects.");
     }
-  });
+    if (dt.zoneName !== "UTC") {
+      throw new Error("All datetime values must be in the UTC time zone.");
+    }
+  }
 
-  // Determine how many hours to trim from the beginning
+  // Convert to local hours
+  const localHours = datetime.map((dt) => dt.setZone(timezone).hour);
+
+  // Determine how many entries to trim from start
   const start = localHours[0] === 0 ? 0 : 24 - localHours[0];
 
-  // Determine how many hours to trim from the end
-  const end = localHours[localHours.length - 1] === 23
-    ? localHours.length
-    : localHours.length - (localHours[localHours.length - 1] + 1);
+  // Determine how many entries to keep up to the last full hour of a full day
+  const lastHour = localHours[localHours.length - 1];
+  const end = lastHour === 23 ? localHours.length : localHours.length - (lastHour + 1);
 
   if (end <= start) {
     return { datetime: [], x: [] };
   }
 
   return {
-    datetime: datetime.slice(start, end).map((d) =>
-      DateTime.isDateTime(d) ? d.toJSDate() : d
-    ),
+    datetime: datetime.slice(start, end),
     x: x.slice(start, end),
   };
 }

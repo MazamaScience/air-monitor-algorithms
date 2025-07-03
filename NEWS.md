@@ -1,3 +1,7 @@
+# air-monitor-algorithms 1.2.0
+
+Refactoring to require luxon DateTime objects in UTC for all timestamps.
+
 # air-monitor-algorithms 1.1.0
 
 Refactoring for best practices and edge case handling. No changes to functionality.

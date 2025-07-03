@@ -12,13 +12,13 @@ import {
  * Calculate daily statistics over a time series of hourly values.
  *
  * Returns five arrays of daily values:
- * * datetime -- Date object marking the start of each day (local time)
+ * * datetime -- Luxon DateTime marking the start of each day (local time)
  * * count    -- Number of valid hourly values each day
  * * min      -- Minimum value each day
  * * mean     -- Mean value each day
  * * max      -- Maximum value each day
  *
- * @param {Array.<Date>} datetime - Hourly UTC timestamps.
+ * @param {Array.<DateTime>} datetime - Hourly UTC timestamps as Luxon DateTime objects.
  * @param {Array.<number>} x - Array of hourly values.
  * @param {string} timezone - Olson time zone (e.g. "America/Los_Angeles").
  * @returns {object} - Object with datetime, count, min, mean, and max arrays.

@@ -6,103 +6,110 @@ Object.defineProperty(exports, "__esModule", {
 exports.pm_nowcast = pm_nowcast;
 var _utils = require("./utils.js");
 /**
- * Returns an array of NowCast values derived from the incoming time series.
+ * Calculate an array of NowCast values from hourly PM measurements.
  *
- * **NOTE:** Incoming data must be on an hourly axis with no gaps. Missing
- * values should be represented by 'null'.
+ * Uses a 12-hour rolling window and the EPA NowCast algorithm to calculate
+ * weighted averages. Missing values should be represented by `null`.
  *
- * @param {Array.<number>} pm Array of hourly PM2.5 or PM10  measurements.
- * @returns {Array.<number>} Array of NowCast values.
+ * The returned array is the same length as the input, but early entries
+ * may contain `null` due to insufficient data.
+ *
+ * @param {Array<number|null>} pm - Hourly PM2.5 or PM10 values (no gaps).
+ * @returns {Array<number|null>} - Array of NowCast values, rounded to 1 decimal place.
  */
 function pm_nowcast(pm) {
-  // TODO: Validate that pm is numeric
-  // See:  https://observablehq.com/@openaq/epa-pm-nowcast
-  var nowcast = Array(pm.length);
-  for (var i = 0; i < pm.length; i++) {
-    var end = i + 1;
-    var start = end < 12 ? 0 : end - 12;
-    nowcast[i] = nowcastPM(pm.slice(start, end));
+  // Validate input
+  if (!Array.isArray(pm)) {
+    throw new Error("Input to pm_nowcast() must be an array.");
   }
 
-  // Round to one decimal place and use null as the missing value
-  nowcast = (0, _utils.roundAndUseNull)(nowcast);
-  return nowcast;
+  // NOTE:  We only use the index `i`, not the actual PM value, so `_` is used to
+  // NOTE:  indicate an unused parameter. The underscore `_` is a common
+  // NOTE:  convention in JavaScript to mean "I don't need this value".
+  var nowcast = pm.map(function (_, i) {
+    var end = i + 1;
+    var start = end < 12 ? 0 : end - 12;
+    var window = pm.slice(start, end);
+    return nowcastPM(window);
+  });
+
+  // Round to one decimal place and convert non-numeric values to null
+  return (0, _utils.roundAndUseNull)(nowcast);
 }
 
 /**
- * Convert an array of up to 12 PM2.5 or PM10 measurements in chronological order
- * into a single NowCast value.
+ * Compute a single NowCast value from up to 12 hours of data.
  *
- * **NOTE:** Incoming data must be on an hourly axis with no gaps.  Missing
- * values should be represented by 'null'.
+ * Applies EPA's NowCast formula, using exponential weighting that depends
+ * on how much values vary over time. Returns `null` if too little recent
+ * data is available.
  *
  * @private
- * @param {Array.<number>} x Array of 12 hourly values in chronological order.
- * @returns {number} NowCast value.
+ * @param {Array<number|null>} x - Up to 12 hourly values in chronological order.
+ * @returns {number|null} - Single NowCast value, or null if data is insufficient.
  */
 function nowcastPM(x) {
-  // NOTE:  We don't insist on 12 hours of data. Convert single values into arrays.
+  // Allow single number input
   if (typeof x === "number") x = [x];
 
-  // NOTE:  map/reduce syntax: a: accumulator; o: object; i: index
-
-  // NOTE:  The algorithm below assumes reverse chronological order.
-  // NOTE:  WARNING:  In javascript `null * 1 = 0` which messes up things in
-  // NOTE:  our mapping functions. So we convert all null to NaN
-  // NOTE:  and then back to null upon return.
+  // NOTE:  The NowCast algorithm expects values in reverse chronological order
+  // NOTE:  Missing values are treated as NaN to avoid incorrect math results,
+  // NOTE:  because in JavaScript: null * 1 = 0, which would corrupt the weighting step.
   x = x.reverse().map(function (o) {
     return o === null ? NaN : o;
   });
 
-  // Check for recent values;
+  // NOTE: EPA requires at least 2 valid values in the most recent 3 hours
   var recentValidCount = x.slice(0, 3).reduce(function (a, o) {
     return Number.isNaN(o) ? a : a + 1;
   }, 0);
   if (recentValidCount < 2) return null;
+
+  // Identify indices of valid values (non-NaN)
   var validIndices = x.reduce(function (a, o, i) {
     return Number.isNaN(o) ? a : a.concat(i);
   }, []);
 
-  // NOTE:  max and min calculations need to be tolerant of missing values
-  var max = x.filter(function (o) {
+  // Calculate min and max while ignoring NaN
+  var validValues = x.filter(function (o) {
     return !Number.isNaN(o);
-  }).reduce(function (a, o) {
+  });
+  if (validValues.length === 0) return null;
+  var max = validValues.reduce(function (a, o) {
     return o > a ? o : a;
   });
-  var min = x.filter(function (o) {
-    return !Number.isNaN(o);
-  }).reduce(function (a, o) {
+  var min = validValues.reduce(function (a, o) {
     return o < a ? o : a;
   });
+
+  // Compute "scaled rate of change" = (max - min) / max
   var scaledRateOfChange = (max - min) / max;
+
+  // Convert scaled rate into a weight factor within the range [0.5, 1.0]
   var weightFactor = 1 - scaledRateOfChange < 0.5 ? 0.5 : 1 - scaledRateOfChange;
 
-  // TODO:  Check for any valid values before attempting to reduce.
-  // TODO:  If all NaN, then simply return null.
-
+  // Compute weighted values, applying less weight to older values
   var weightedValues = x.map(function (o, i) {
     return o * Math.pow(weightFactor, i);
-  }) // maps onto an array including NaN
-  .filter(function (x) {
-    return !Number.isNaN(x);
-  }); // remove NaN before calculating sum
+  }).filter(function (o) {
+    return !Number.isNaN(o);
+  });
+  if (weightedValues.length === 0) return null;
+  var weightedSum = weightedValues.reduce(function (a, o) {
+    return a + o;
+  });
 
-  var weightedSum = null;
-  if (weightedValues.length == 0) {
-    return null;
-  } else {
-    weightedSum = weightedValues.reduce(function (a, o) {
-      return a + o;
-    });
-  }
-  var weightFactorSum = validIndices.map(function (o) {
-    return Math.pow(weightFactor, o);
+  // Compute the sum of weights used for normalization
+  var weightFactorSum = validIndices.map(function (i) {
+    return Math.pow(weightFactor, i);
   }).reduce(function (a, o) {
     return a + o;
   });
+
+  // Final NowCast value, rounded to 1 decimal place
   var returnVal = parseFloat((weightedSum / weightFactorSum).toFixed(1));
 
-  // Convert NaN back to null
+  // If the result is not a number, return null
   returnVal = Number.isNaN(returnVal) ? null : returnVal;
   return returnVal;
 }

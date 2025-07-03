@@ -4,62 +4,70 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.dailyStats = dailyStats;
-var _momentTimezone = _interopRequireDefault(require("moment-timezone"));
 var _trimDate = require("./trimDate.js");
 var _utils = require("./utils.js");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 /**
- * Calculates daily statistics for the time series specified by `datetime` and `x`.
+ * Calculate daily statistics over a time series of hourly values.
  *
- * The returned object contains five properties:
- * * datetime -- Array of date objects specifying the starting hour of each day.
- * * count -- Array of daily counts of non-missing values.
- * * min -- Array of daily minimum values.
- * * mean -- Array of daily mean values.
- * * max -- Array of daily maximum values.
+ * Returns five arrays of daily values:
+ * * datetime -- Luxon DateTime marking the start of each day (local time)
+ * * count    -- Number of valid hourly values each day
+ * * min      -- Minimum value each day
+ * * mean     -- Mean value each day
+ * * max      -- Maximum value each day
  *
- * @param {Array.<Date>} datetime Regular hourly axis (no missing hours)
- * representing the time associated with each measurement.
- * @param {Array.<number>} x Array of hourly measurements.
- * @param {string} timezone Olson time zone to use as "local time".
- * @returns {object} An object with `datetime`, `count`, `min`, `mean` and `max`
- * properties.
+ * @param {Array.<DateTime>} datetime - Hourly UTC timestamps as Luxon DateTime objects.
+ * @param {Array.<number>} x - Array of hourly values.
+ * @param {string} timezone - Olson time zone (e.g. "America/Los_Angeles").
+ * @returns {object} - Object with datetime, count, min, mean, and max arrays.
  */
 function dailyStats(datetime, x, timezone) {
-  // Start by trimming to full days in the local timezone
+  // Trim to full days in the specified local timezone
   var trimmed = (0, _trimDate.trimDate)(datetime, x, timezone);
 
-  // TODO: Add support for minCount valid values and partial days.
+  // TODO: Add support for minCount valid values and partial days
 
+  // NOTE: Return empty result if fewer than 24 aligned values
+  if (!Array.isArray(trimmed.datetime) || trimmed.datetime.length < 24 || trimmed.datetime.length !== trimmed.x.length) {
+    return {
+      datetime: [],
+      count: [],
+      min: [],
+      mean: [],
+      max: []
+    };
+  }
   var dayCount = trimmed.datetime.length / 24;
-  var daily_datetime = [];
-  var daily_count = [];
-  var daily_min = [];
-  var daily_mean = [];
-  var daily_max = [];
+  var dailyDatetime = [];
+  var dailyCount = [];
+  var dailyMin = [];
+  var dailyMean = [];
+  var dailyMax = [];
   for (var i = 0; i < dayCount; i++) {
     var start = i * 24;
-    var end = i * 24 + 24;
-    // NOTE:  Values are assigned to the start of the day.
-    daily_datetime[i] = trimmed.datetime[start];
-    // NOTE:  Stats involve values from start to end of the day.
+    var end = start + 24;
+
+    // Each day’s timestamp is the first hour of the day
+    dailyDatetime[i] = trimmed.datetime[start];
+
+    // Daily stats are calculated using 24 hourly values
     var values = trimmed.x.slice(start, end);
-    daily_count[i] = (0, _utils.arrayCount)(values);
-    daily_min[i] = (0, _utils.arrayMin)(values);
-    daily_mean[i] = (0, _utils.arrayMean)(values);
-    daily_max[i] = (0, _utils.arrayMax)(values);
+    dailyCount[i] = (0, _utils.arrayCount)(values);
+    dailyMin[i] = (0, _utils.arrayMin)(values);
+    dailyMean[i] = (0, _utils.arrayMean)(values);
+    dailyMax[i] = (0, _utils.arrayMax)(values);
   }
 
-  // Round to one decimal place and use null as the missing value
-  daily_count = (0, _utils.roundAndUseNull)(daily_count, 0);
-  daily_min = (0, _utils.roundAndUseNull)(daily_min);
-  daily_mean = (0, _utils.roundAndUseNull)(daily_mean);
-  daily_max = (0, _utils.roundAndUseNull)(daily_max);
+  // Round all values (0 decimals for count, 1 for everything else)
+  var roundedCount = (0, _utils.roundAndUseNull)(dailyCount, 0);
+  var roundedMin = (0, _utils.roundAndUseNull)(dailyMin);
+  var roundedMean = (0, _utils.roundAndUseNull)(dailyMean);
+  var roundedMax = (0, _utils.roundAndUseNull)(dailyMax);
   return {
-    datetime: daily_datetime,
-    count: daily_count,
-    min: daily_min,
-    mean: daily_mean,
-    max: daily_max
+    datetime: dailyDatetime,
+    count: roundedCount,
+    min: roundedMin,
+    mean: roundedMean,
+    max: roundedMax
   };
 }

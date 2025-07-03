@@ -13,7 +13,7 @@ import { roundAndUseNull, useNull } from "./utils.js";
  *
  * By default, the most recent 7 full days are used.
  *
- * @param {Array.<Date>} datetime - Hourly timestamps (UTC).
+ * @param {Array.<DateTime>} datetime - Hourly UTC timestamps as Luxon DateTime objects.
  * @param {Array.<number>} x - Matching array of values (e.g. PM2.5).
  * @param {string} timezone - Olson timezone string (e.g. "America/Los_Angeles").
  * @param {number} dayCount - Number of days to include (default: 7).

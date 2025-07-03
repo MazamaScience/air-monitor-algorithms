@@ -10,119 +10,125 @@ exports.arrayMin = arrayMin;
 exports.arraySum = arraySum;
 exports.roundAndUseNull = roundAndUseNull;
 exports.useNull = useNull;
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 /**
- * Convert an array of values to an array rounded to `digits` decimal places
- * and using `null` as the default missing value. Missing values are
- * any members of `x` with values of `undefined`, `NaN` or `null`.
+ * roundAndUseNull
  *
- * @param {Array.<number>} x Array of values.
- * @param {number} digits Number of digits to retain after the decimal point.
- * @returns {Array.<number>} Array of values.
+ * Convert an array of numbers to an array where each number is rounded to a fixed
+ * number of decimal places. Any value that is not a valid number (NaN, undefined, null)
+ * will be converted to `null`.
+ *
+ * @param {Array<number>} x - The input array of values.
+ * @param {number} digits - Number of decimal places to round to (default is 1).
+ * @returns {Array<number|null>} - New array with rounded values or nulls.
  */
 function roundAndUseNull(x) {
   var digits = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
   var factor = Math.pow(10, digits);
-  var x_rounded = x.map(function (o) {
-    return o === null || o === undefined || isNaN(o) ? null : Math.round(factor * o) / factor;
+  return x.map(function (value) {
+    // Replace non-numeric or missing values with null
+    if (!Number.isFinite(value)) return null;
+
+    // Round numeric value to specified decimal places
+    return Math.round(value * factor) / factor;
   });
-  return x_rounded;
 }
 
 /**
- * Convert an array of values to an array where all values of `undefined` or
- * `NaN` have been replaced by `null`.
+ * useNull
  *
- * @param {Array.<number>} x Array of values.
- * @returns {Array.<number>} Array of values.
+ * Convert an array so that any undefined, null, or non-numeric (NaN) values
+ * are replaced by `null`.
+ *
+ * @param {Array<*>} x - Input array with possibly invalid values.
+ * @returns {Array<number|null>} - Cleaned array with only numbers or nulls.
  */
 function useNull(x) {
-  var x_null = x.map(function (o) {
-    return o === null || o === undefined || isNaN(o) ? null : o;
+  return x.map(function (value) {
+    return Number.isFinite(value) ? value : null;
   });
-  return x_null;
 }
 
 /**
- * Return the minimum value in an array, ignoring any non-numeric values such as
- * `NaN` or `null`. If all values are non-numeric, `null` is returned.
+ * arrayMin
  *
- * @param {Array.<number>} x Array of values.
- * @returns {number|null} Minimum numeric value or null.
+ * Return the smallest number from the array, ignoring any non-numeric values.
+ * Returns null if no valid numbers are present.
+ *
+ * @param {Array<*>} x - Input array.
+ * @returns {number|null} - Minimum number or null if none found.
  */
 function arrayMin(x) {
-  // https://stackoverflow.com/questions/19279852/how-to-skip-nan-when-using-math-min-apply
-  var FUN = function FUN(a, o) {
-    return o === null || o > a ? a : o;
-  };
-  var value = useNull(x).reduce(FUN, Number.MAX_VALUE);
-  if (value === Number.MAX_VALUE) {
-    value = null;
-  }
-  return value;
+  var valid = useNull(x).filter(function (v) {
+    return v !== null;
+  });
+  return valid.length > 0 ? Math.min.apply(Math, _toConsumableArray(valid)) : null;
 }
 
 /**
- * Return the maximum value in an array, ignoring any non-numeric values such as
- * `NaN` or `null`. If all values are non-numeric, `null` is returned.
+ * arrayMax
  *
- * @param {Array.<number>} x Array of values.
- * @returns {number|null} Maximum numeric value or null.
+ * Return the largest number from the array, ignoring any non-numeric values.
+ * Returns null if no valid numbers are present.
+ *
+ * @param {Array<*>} x - Input array.
+ * @returns {number|null} - Maximum number or null if none found.
  */
 function arrayMax(x) {
-  // https://stackoverflow.com/questions/19279852/how-to-skip-nan-when-using-math-min-apply
-  var FUN = function FUN(a, o) {
-    return o === null || o < a ? a : o;
-  };
-  var value = useNull(x).reduce(FUN, Number.MIN_VALUE);
-  if (value === Number.MIN_VALUE) {
-    value = null;
-  }
-  return value;
+  var valid = useNull(x).filter(function (v) {
+    return v !== null;
+  });
+  return valid.length > 0 ? Math.max.apply(Math, _toConsumableArray(valid)) : null;
 }
 
 /**
- * Return the count of valid values an array, ignoring any non-numeric values
- * such as `NaN` or `null`.
+ * arrayCount
  *
- * @param {Array.<number>} x Array of values.
- * @returns {number} Count of numeric values.
+ * Count the number of valid numeric values in the array.
+ *
+ * @param {Array<*>} x - Input array.
+ * @returns {number} - Count of numbers (excluding nulls and invalid values).
  */
 function arrayCount(x) {
-  var FUN = function FUN(a, o) {
-    return o === null ? a : a + 1;
-  };
-  var value = useNull(x).reduce(FUN, 0);
-  return value;
+  return useNull(x).filter(function (v) {
+    return v !== null;
+  }).length;
 }
 
 /**
- * Return the sum of an array, ignoring any non-numeric values such as
- * `NaN` or `null`. If all values are non-numeric, `null` is returned.
+ * arraySum
  *
- * @param {Array.<number>} x Array of values.
- * @returns {number|null} Sum of numeric values or null.
+ * Sum all valid numeric values in the array. Returns null if all values are invalid.
+ *
+ * @param {Array<*>} x - Input array.
+ * @returns {number|null} - Sum of numbers or null if no valid values.
  */
 function arraySum(x) {
-  var FUN = function FUN(a, o) {
-    return o === null ? a : a + o;
-  };
-  var value = useNull(x).reduce(FUN, null);
-  return value;
+  var valid = useNull(x).filter(function (v) {
+    return v !== null;
+  });
+  return valid.length > 0 ? valid.reduce(function (a, b) {
+    return a + b;
+  }, 0) : null;
 }
 
 /**
- * Return the mean of an array, ignoring any non-numeric values such as
- * `NaN` or `null`. If all values are non-numeric, `null` is returned.
+ * arrayMean
  *
- * @param {Array.<number>} x Array of values.
- * @returns {number|null} Mean of numeric values or null.
+ * Calculate the average (mean) of valid numbers in the array.
+ * Returns null if no valid numbers are present.
+ *
+ * @param {Array<*>} x - Input array.
+ * @returns {number|null} - Mean of valid values or null.
  */
 function arrayMean(x) {
-  var count = arrayCount(x);
-  if (count === 0) {
-    return null;
-  } else {
-    var value = arraySum(x) / count;
-    return value;
-  }
+  var valid = useNull(x).filter(function (v) {
+    return v !== null;
+  });
+  return valid.length > 0 ? arraySum(valid) / valid.length : null;
 }

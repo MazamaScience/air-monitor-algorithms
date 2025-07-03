@@ -10,13 +10,17 @@ Service.
 
 > **Note:** All time series data are assumed to be on a regular hourly axis
 > with no gaps. Missing values should be represented as `null`.
+>
+> **🚨 Important:** All timestamp inputs must be
+> [Luxon](https://moment.github.io/luxon/) `DateTime` objects in the UTC timezone.
+> All timestamp outputs are also returned as `DateTime` objects in UTC.
 
 ## Features
 
 High-level analysis functions:
 
 - `dailyStats(datetime, x, timezone)`
-  Returns local-time daily statistics from hourly data.
+  Returns local-time daily statistics (min, max, mean, count) from hourly data.
 
 - `diurnalStats(datetime, x, timezone, dayCount)`
   Returns local-time hourly averages from the most recent `dayCount` days.
@@ -37,29 +41,34 @@ Array utility functions:
 
 ## Installation
 
-```
-# bash
-npm install github:MazamaScience/air-monitor-algorithms
-```
+To install the latest stable release from [npm](https://www.npmjs.com/package/air-monitor-algorithms):
+
+```npm install air-monitor-algorithms```
+
+To install the latest development version directly from GitHub:
+
+```npm install github:MazamaScience/air-monitor-algorithms```
+
 ## Usage
 
 This ES module can be used in modern JavaScript projects, including Svelte
-and Vue apps:
+and Vue apps. You must use Luxon `DateTime` objects in UTC as input timestamps.
 
 ```
 import {
   dailyStats,
   pm_nowcast
 } from "air-monitor-algorithms";
+import { DateTime } from "luxon";
 
-// Example: Calculate daily means from hourly PM2.5 readings
+// Generate fake hourly data for 3 days
 const datetime = [];
 const x = [];
 
-// Generate fake hourly data for 3 days
+const start = DateTime.fromISO("2023-07-01T00:00:00Z"); // UTC
 for (let i = 0; i < 72; i++) {
-  datetime.push(new Date(2023, 6, 1, i)); // July 1st, hourly
-  x.push(50 + Math.sin(i / 3) * 10);      // sinusoidal variation
+  datetime.push(start.plus({ hours: i }));       // UTC Luxon DateTime
+  x.push(50 + Math.sin(i / 3) * 10);             // sinusoidal variation
 }
 
 // Calculate daily statistics in the 'America/Los_Angeles' timezone
@@ -73,4 +82,4 @@ console.log(nowcast.slice(-5)); // → last 5 hourly NowCast values
 
 ## Project Support
 
-This project is supported by the [USFS AirFire](https://www.airfire.org) group.
+This project is supported by the [USFS AirFire](https://www.airfire.org) team.

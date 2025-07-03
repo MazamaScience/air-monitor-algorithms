@@ -4,56 +4,59 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.diurnalStats = diurnalStats;
-var _momentTimezone = _interopRequireDefault(require("moment-timezone"));
 var _trimDate = require("./trimDate.js");
 var _utils = require("./utils.js");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 /**
- * Calculates diurnal averages for the time series specified by `datetime` and `x`.
+ * Calculate hourly (diurnal) statistics over recent days.
  *
- * The returned object contains two properties:
- * * hour -- Array of local time hours [0-24].
- * * count -- Array of hour-of-day counts of non-missing values.
- * * min -- Array of hour-of-day minimum values.
- * * mean -- Array of hour-of-day mean values.
- * * max -- Array of hour-of-day maximum values
+ * Returns five arrays of hourly values:
+ * * hour  -- Local-time hour of day [0–23]
+ * * count -- Number of non-missing values per hour
+ * * min   -- Minimum value at each hour
+ * * mean  -- Mean value at each hour
+ * * max   -- Maximum value at each hour
  *
- * By default, statistics are calculated using data from the most recent 7 days
- * in the `datetime` array.
+ * By default, the most recent 7 full days are used.
  *
- * @param {Array.<Date>} datetime Regular hourly axis (no missing hours)
- * representing the time associated with each measurement.
- * @param {Array.<number>} x Array of hourly measurements.
- * @param {string} timezone Olson time zone to use as "local time".
- * @param {number} dayCount Number of most recent days to use.
- * @returns {object} Object with `hour`, `count`, `min`, `mean` and `max` properties.
+ * @param {Array.<DateTime>} datetime - Hourly UTC timestamps as Luxon DateTime objects.
+ * @param {Array.<number>} x - Matching array of values (e.g. PM2.5).
+ * @param {string} timezone - Olson timezone string (e.g. "America/Los_Angeles").
+ * @param {number} dayCount - Number of days to include (default: 7).
+ * @returns {object} - Object with hour, count, min, mean, and max arrays.
  */
 function diurnalStats(datetime, x, timezone) {
   var dayCount = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 7;
-  // Start by trimming to full days in the local timezone
+  // Trim to full local days
   var trimmed = (0, _trimDate.trimDate)(datetime, x, timezone);
 
-  // Use the most recent dayCount days
+  // Return empty result if no full days exist
+  if (!Array.isArray(trimmed.datetime) || trimmed.datetime.length < 24 || trimmed.datetime.length !== trimmed.x.length) {
+    return {
+      hour: [],
+      count: [],
+      min: [],
+      mean: [],
+      max: []
+    };
+  }
+
+  // Use as many recent full days as possible, up to `dayCount`
   var fullDayCount = trimmed.datetime.length / 24;
   dayCount = fullDayCount < dayCount ? fullDayCount : dayCount;
   var startIndex = trimmed.datetime.length - dayCount * 24;
-  var localTime = trimmed.datetime.map(function (o) {
-    return _momentTimezone["default"].tz(o, timezone);
-  });
-  var hours = localTime.map(function (o) {
-    return o.hours();
-  });
-  var value = (0, _utils.useNull)(trimmed.x);
-  var validValue = value.map(function (o) {
-    return o === null ? 0 : 1;
+
+  // Clean data and mark valid values
+  var values = (0, _utils.useNull)(trimmed.x);
+  var validFlags = values.map(function (v) {
+    return v === null ? 0 : 1;
   });
   var hour = [];
-  var hourly_count = [];
-  var hourly_min = [];
-  var hourly_mean = [];
-  var hourly_max = [];
+  var hourlyCount = [];
+  var hourlyMin = [];
+  var hourlyMean = [];
+  var hourlyMax = [];
 
-  // For each hour, average together the contributions from each day
+  // For each hour of the day (0–23), compute stats across days
   for (var h = 0; h < 24; h++) {
     var min = Number.MAX_VALUE;
     var max = Number.MIN_VALUE;
@@ -61,27 +64,30 @@ function diurnalStats(datetime, x, timezone) {
     var sum = null;
     for (var d = 0; d < dayCount; d++) {
       var index = startIndex + h + d * 24;
-      if (validValue[index] === 1) {
-        min = value[index] < min ? value[index] : min;
-        max = value[index] > max ? value[index] : max;
+      if (validFlags[index] === 1) {
+        if (sum === null) sum = 0;
+        min = values[index] < min ? values[index] : min;
+        max = values[index] > max ? values[index] : max;
+        sum += values[index];
         count += 1;
-        sum += value[index];
       }
     }
     hour[h] = h;
-    hourly_min[h] = min === Number.MAX_VALUE ? null : min;
-    hourly_max[h] = max === Number.MIN_VALUE ? null : max;
-    hourly_count[h] = count;
-    hourly_mean[h] = sum === null ? null : sum / count;
+    hourlyMin[h] = min === Number.MAX_VALUE ? null : min;
+    hourlyMax[h] = max === Number.MIN_VALUE ? null : max;
+    hourlyCount[h] = count;
+    hourlyMean[h] = sum === null ? null : sum / count;
   }
-  hourly_min = (0, _utils.roundAndUseNull)(hourly_min);
-  hourly_mean = (0, _utils.roundAndUseNull)(hourly_mean);
-  hourly_max = (0, _utils.roundAndUseNull)(hourly_max);
+
+  // Round all numeric outputs and use null for missing
+  var roundedMin = (0, _utils.roundAndUseNull)(hourlyMin);
+  var roundedMean = (0, _utils.roundAndUseNull)(hourlyMean);
+  var roundedMax = (0, _utils.roundAndUseNull)(hourlyMax);
   return {
     hour: hour,
-    count: hourly_count,
-    min: hourly_min,
-    mean: hourly_mean,
-    max: hourly_max
+    count: hourlyCount,
+    min: roundedMin,
+    mean: roundedMean,
+    max: roundedMax
   };
 }
