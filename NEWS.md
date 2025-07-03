@@ -1,3 +1,7 @@
+# air-monitor-algorithms 1.2.1
+
+Fixed npm distribution to include src/ instead of dist/.
+
 # air-monitor-algorithms 1.2.0
 
 Refactoring to require luxon DateTime objects in UTC for all timestamps.

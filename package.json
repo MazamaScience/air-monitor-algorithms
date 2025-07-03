@@ -1,6 +1,6 @@
 {
   "name": "air-monitor-algorithms",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Algorithms used in air quality processing.",
   "main": "./src/index.js",
   "type": "module",
@@ -17,7 +17,8 @@
     "'air-quality'"
   ],
   "files": [
-    "dist",
+    "src",
+    "LICENSE",
     "README.md"
   ],
   "author": "Jonathan Callahan",
