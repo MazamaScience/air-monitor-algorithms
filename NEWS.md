@@ -1,3 +1,7 @@
+# air-monitor-algorithms 1.2.2
+
+Creating .esm.js and .umd.js versions with rollup.
+
 # air-monitor-algorithms 1.2.1
 
 Fixed npm distribution to include src/ instead of dist/.

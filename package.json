@@ -1,25 +1,31 @@
 {
   "name": "air-monitor-algorithms",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Algorithms used in air quality processing.",
-  "main": "./src/index.js",
+  "main": "./dist/air-monitor-algorithms.umd.js",
+  "module": "./dist/air-monitor-algorithms.esm.js",
+  "exports": {
+    "import": "./dist/air-monitor-algorithms.esm.js",
+    "require": "./dist/air-monitor-algorithms.umd.js"
+  },
   "type": "module",
   "scripts": {
-    "build": "babel src -d dist",
+    "build": "rollup -c",
     "docs": "jsdoc -c ./jsdoc.conf.json",
     "test": "uvu"
   },
+  "files": [
+    "dist",
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MazamaScience/air-monitor-algorithms.git"
   },
   "keywords": [
-    "'air-quality'"
-  ],
-  "files": [
-    "src",
-    "LICENSE",
-    "README.md"
+    "air-quality"
   ],
   "author": "Jonathan Callahan",
   "license": "SEE LICENSE IN LICENSE",
@@ -34,6 +40,10 @@
     "@babel/cli": "^7.24.1",
     "@babel/core": "^7.24.3",
     "@babel/preset-env": "^7.24.3",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "rollup": "^4.16.4",
     "uvu": "^0.5.6"
   }
 }
