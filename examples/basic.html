@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Air Monitor Example</title>
+</head>
+<body>
+  <h1>Air Monitor (UMD) Example</h1>
+  <pre id="output"></pre>
+
+  <!-- Load UMD bundles -->
+  <script src="../dist/air-monitor-algorithms.umd.js"></script>
+  <script>
+    // Confirm globals are available
+    console.log('AirMonitorAlgorithms:', typeof AirMonitorAlgorithms);
+
+    const ama = AirMonitorAlgorithms;
+
+    // From utils.test.js
+    let x = [1, 1.1, 1.12, 1.123, 1.1234, NaN, undefined, null, 1.12345];
+    console.log(x);
+    console.log(ama.useNull(x));
+
+    let a = 1;
+  </script>
+</body>
+</html>
+
