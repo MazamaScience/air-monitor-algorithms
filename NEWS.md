@@ -1,3 +1,7 @@
+# air-monitor-algorithms 1.2.6
+
+Finally sorted out npm publishing.
+
 # air-monitor-algorithms 1.2.4
 
 Version bump and docs/ rebuild.:wq
