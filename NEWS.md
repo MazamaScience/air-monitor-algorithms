@@ -1,3 +1,8 @@
+# air-monitor-algorithms 1.2.4
+
+Version bump and docs/ rebuild.:wq
+
+
 # air-monitor-algorithms 1.2.3
 
 Harmonization with other `air-monitor~` packages.
