@@ -1,38 +1,40 @@
 {
   "name": "air-monitor-algorithms",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Algorithms used in air quality processing.",
+  "keywords": [
+    "air quality",
+    "nowcast"
+  ],
+  "author": "Jonathan Callahan",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MazamaScience/air-monitor-algorithms.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MazamaScience/air-monitor-algorithms/issues"
+  },
+  "homepage": "https://github.com/MazamaScience/air-monitor-algorithms#readme",
+  "type": "module",
   "main": "./dist/air-monitor-algorithms.umd.js",
   "module": "./dist/air-monitor-algorithms.esm.js",
   "exports": {
     "import": "./dist/air-monitor-algorithms.esm.js",
     "require": "./dist/air-monitor-algorithms.umd.js"
   },
-  "type": "module",
-  "scripts": {
-    "build": "rollup -c",
-    "docs": "jsdoc -c ./jsdoc.conf.json",
-    "test": "uvu"
-  },
   "files": [
     "dist",
     "src",
-    "LICENSE",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/MazamaScience/air-monitor-algorithms.git"
-  },
-  "keywords": [
-    "air-quality"
-  ],
-  "author": "Jonathan Callahan",
-  "license": "SEE LICENSE IN LICENSE",
-  "bugs": {
-    "url": "https://github.com/MazamaScience/air-monitor-algorithms/issues"
-  },
-  "homepage": "https://github.com/MazamaScience/air-monitor-algorithms#readme",
+  "scripts": {
+    "build": "rollup -c",
+    "docs": "jsdoc -c ./jsdoc.conf.json",
+    "test": "uvu",
+    "publish": "npm publish --access public"
+},
   "dependencies": {
     "luxon": "3.6.1"
   },
@@ -43,7 +45,7 @@
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
-    "rollup": "^4.16.4",
+    "rollup": "^4.17.3",
     "uvu": "^0.5.6"
   }
 }

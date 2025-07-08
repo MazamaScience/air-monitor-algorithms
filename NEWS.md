@@ -1,3 +1,7 @@
+# air-monitor-algorithms 1.2.3
+
+Harmonization with other `air-monitor~` packages.
+
 # air-monitor-algorithms 1.2.2
 
 Creating .esm.js and .umd.js versions with rollup.

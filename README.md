@@ -80,6 +80,12 @@ const nowcast = pm_nowcast(x);
 console.log(nowcast.slice(-5)); // → last 5 hourly NowCast values
 ```
 
-## Project Support
+## Related Packages
 
-This project is supported by the [USFS AirFire](https://www.airfire.org) team.
+- [air-monitor](https://www.npmjs.com/package/air-monitor)
+- [air-monitor-plots](https://www.npmjs.com/package/air-monitor-plots)
+
+## License
+
+GPL-3.0-or-later
+© 2024–2025 Jonathan Callahan / USFS AirFire
