@@ -1,6 +1,6 @@
 {
   "name": "air-monitor-algorithms",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Algorithms used in air quality processing.",
   "keywords": [
     "air quality",
@@ -33,7 +33,7 @@
     "build": "rollup -c",
     "docs": "jsdoc -c ./jsdoc.conf.json",
     "test": "uvu",
-    "publish": "npm publish --access public"
+    "publish:public": "npm publish --access public"
   },
   "dependencies": {
     "luxon": "3.6.1"
