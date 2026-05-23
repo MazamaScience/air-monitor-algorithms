@@ -2,27 +2,382 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Air Monitor Example</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>air-monitor-algorithms – Browser Example</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 860px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      color: #222;
+    }
+    h1 { font-size: 1.4rem; }
+    h2 {
+      font-size: 1.05rem;
+      margin-top: 2rem;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 0.2rem;
+    }
+    p { font-size: 0.95rem; margin: 0.5rem 0 0.8rem; line-height: 1.5; }
+    ul { font-size: 0.95rem; margin: 0.3rem 0 0.8rem; line-height: 1.7; padding-left: 1.4rem; }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 0.88rem;
+      margin-top: 0.5rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.25rem 0.6rem;
+      text-align: right;
+    }
+    th { background: #f5f5f5; text-align: center; }
+    td:first-child, th:first-child { text-align: left; }
+  </style>
 </head>
 <body>
-  <h1>Air Monitor (UMD) Example</h1>
-  <pre id="output"></pre>
 
-  <!-- Load UMD bundles -->
-  <script src="../dist/air-monitor-algorithms.umd.js"></script>
+  <!-- ============================================================
+       Title
+  ============================================================ -->
+  <h1>air-monitor-algorithms – Browser Example</h1>
+
+
+  <!-- ============================================================
+       Purpose
+  ============================================================ -->
+  <h2>Purpose</h2>
+  <p>
+    The <a href="https://mazamascience.github.io/air-monitor-algorithms/">air-monitor-algorithms</a>
+    package provides scientific algorithms for analyzing hourly time series data,
+    with a focus on air quality monitoring. It supports the
+    <a href="https://mazamascience.github.io/air-monitor/">air-monitor</a> ecosystem,
+    which works with air quality monitoring data archives hosted by the
+    US Forest Service AirFire team.
+  </p>
+  <p>
+    All time series are assumed to be on a regular hourly axis with no gaps.
+    Missing values are represented as <code>null</code>. All timestamps are
+    handled as UTC values using the
+    <a href="https://moment.github.io/luxon/">Luxon</a> date-time library.
+  </p>
+  <p>
+    This page demonstrates three of the package's primary functions using a
+    14-day synthetic PM2.5 dataset.
+  </p>
+
+
+  <!-- ============================================================
+       Libraries used
+  ============================================================ -->
+  <h2>Libraries Used in This Example</h2>
+  <ul>
+    <li>
+      <a href="https://mazamascience.github.io/air-monitor-algorithms/">air-monitor-algorithms</a>
+      — provides the <code>pm_nowcast</code>, <code>dailyStats</code>, and
+      <code>diurnalStats</code> functions used below.
+    </li>
+    <li>
+      <a href="https://moment.github.io/luxon/">Luxon</a>
+      — provides the <code>DateTime</code> class for creating and manipulating
+      UTC timestamps. All timestamp inputs to <em>air-monitor-algorithms</em>
+      must be Luxon <code>DateTime</code> objects in the UTC timezone.
+    </li>
+  </ul>
+  <p>
+    Both libraries are loaded directly from a
+    CDN — no installation or build step is required to run this page.
+  </p>
+
+
+  <!-- ============================================================
+       Example dataset
+  ============================================================ -->
+  <h2>Example Dataset</h2>
+  <p>
+    The dataset is generated in-page and consists of 336 synthetic hourly PM2.5 values spanning
+    14 days (1–14 July 2024) in the <em>America/Los_Angeles</em> timezone.
+    Values are constructed from three overlapping components that together
+    mimic realistic air quality conditions during a wildfire smoke event:
+  </p>
+  <ul>
+    <li>
+      <strong>Background baseline</strong> — a constant 10 µg/m³ representing
+      typical clean-air conditions.
+    </li>
+    <li>
+      <strong>Diurnal cycle</strong> — a 24-hour sinusoid driven by daily human
+      activity (traffic, heating, cooking). Concentrations peak around 9 AM and
+      fall to their lowest around 9 PM, adding up to 16 µg/m³ above the baseline.
+    </li>
+    <li>
+      <strong>Episodic smoke event</strong> — a smooth bell curve spanning all
+      14 days, representing wildfire smoke drifting into and then clearing from
+      a region. The event peaks at day 7 and adds up to ~80 µg/m³, bringing
+      combined concentrations to roughly 105 µg/m³ at the peak.
+    </li>
+  </ul>
+
+
+  <!-- ============================================================
+       NowCast
+  ============================================================ -->
+  <h2>NowCast</h2>
+  <pre>
+    ...
+    const nowcast = pm_nowcast(pm25);
+  </pre>
+  <p>
+    The <code>pm_nowcast()</code> function implements the US EPA NowCast algorithm which converts a sequence of hourly PM2.5
+    measurements into a weighted rolling average designed for communicating
+    current air quality conditions to the public. Unlike a simple moving
+    average, NowCast uses a 12-hour window and gives progressively more weight
+    to the most recent hours — and responds especially fast when concentrations
+    are changing rapidly, such as during the onset or clearing of a smoke event.
+  </p>
+  <p>
+    The table below shows the first 48 hours of the dataset. The
+    <em>NowCast</em> column lags slightly behind the raw PM2.5 when
+    conditions are stable, but closely tracks rapid changes.
+  </p>
+  <div id="nowcast-table"><em>Computing…</em></div>
+
+
+  <!-- ============================================================
+       Daily Statistics
+  ============================================================ -->
+  <h2>Daily Statistics</h2>
+  <pre>
+    ...
+    const daily = dailyStats(datetime, pm25, timezone);
+  </pre>
+  <p>
+    The <code>dailyStats()</code> function aggregates all 24 hourly observations for each calendar
+    day into a single summary row. Day boundaries are determined using
+    local midnight-to-midnight in the <em>America/Los_Angeles</em> timezone,
+    even though all timestamps are stored in UTC.
+  </p>
+  <p>
+    Each row reports the count of valid (non-missing) hourly values alongside
+    the daily minimum, mean, and maximum PM2.5. The count column is useful for
+    data-quality screening: a day with fewer than 24 valid values may not be
+    fully representative. The smoke event peak is visible in the rising mean
+    and maximum values from day 4 through day 10.
+  </p>
+  <div id="daily-table"><em>Computing…</em></div>
+
+
+  <!-- ============================================================
+       Diurnal Profile
+  ============================================================ -->
+  <h2>Diurnal Profile</h2>
+  <pre>
+    ...
+    const diurnalProfile = diurnalStats(datetime, pm25, timezone, 14);
+  </pre>
+  <p>
+    The <code>diurnalStats()</code> function collapses all 14 days of hourly observations into a
+    single "average day" by grouping values by hour-of-day (0–23) and
+    computing statistics across all days. This reveals the characteristic
+    daily shape of a pollutant signal and is useful for understanding when
+    concentrations are typically highest or lowest over a multi-day period.
+  </p>
+  <p>
+    In this synthetic dataset the diurnal signal peaks around 09:00 and
+    reaches its minimum around 21:00. Because the smoke event elevates all
+    hours across the middle days, the min and max columns show a wide spread —
+    the min reflects cleaner days at the start and end of the record, while
+    the max reflects smoke-event days near the peak.
+  </p>
+  <div id="diurnal-table"><em>Computing…</em></div>
+
+
+  <!--
+    Luxon provides the DateTime class used for all timestamps.
+    The algorithms package requires all input timestamps to be
+    Luxon DateTime objects in the UTC timezone.
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3.6.1/build/global/luxon.min.js"></script>
+
+  <!--
+    The UMD build of air-monitor-algorithms exposes all public functions
+    as properties of the global AirMonitorAlgorithms object.
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/air-monitor-algorithms@1.2.6/dist/air-monitor-algorithms.umd.js"></script>
+
   <script>
-    // Confirm globals are available
-    console.log('AirMonitorAlgorithms:', typeof AirMonitorAlgorithms);
+    // ------------------------------------------------------------------
+    // Unpack the tools we need from each library.
+    // ------------------------------------------------------------------
 
-    const ama = AirMonitorAlgorithms;
+    // Luxon's DateTime is used to create UTC-anchored timestamps.
+    const { DateTime } = luxon;
 
-    // From utils.test.js
-    let x = [1, 1.1, 1.12, 1.123, 1.1234, NaN, undefined, null, 1.12345];
-    console.log(x);
-    console.log(ama.useNull(x));
+    // The three main analysis functions from this package.
+    const { pm_nowcast, dailyStats, diurnalStats } = AirMonitorAlgorithms;
 
-    let a = 1;
+    // All date-boundary calculations (daily/diurnal statistics) will use
+    // this timezone to determine when one day ends and the next begins.
+    const timezone = "America/Los_Angeles";
+
+
+    // ------------------------------------------------------------------
+    // Generate 14 days of synthetic hourly PM2.5 data.
+    //
+    // Real air quality data contains two overlapping signals:
+    //
+    //   1. A DIURNAL CYCLE — a 24-hour sinusoid driven by daily human
+    //      activity (traffic, heating, cooking). Concentrations tend to
+    //      peak in the morning and fall overnight.
+    //
+    //   2. AN EPISODIC EVENT — a multi-day rise and fall driven by events
+    //      like wildfire smoke drifting into a region. Here we model this
+    //      as a smooth bell curve that peaks around day 7 and returns to
+    //      background by day 14.
+    //
+    // Starting at 2024-07-01T07:00:00Z = 2024-07-01T00:00:00 PDT.
+    // Anchoring to local midnight means trimDate() sees exactly 14 full
+    // calendar days with nothing to trim.
+    // ------------------------------------------------------------------
+
+    const nHours  = 14 * 24;  // 336 hourly observations
+    // .toUTC() is required in the browser: fromISO() assigns the system
+    // timezone by default, but the package requires all timestamps in UTC.
+    const startUTC = DateTime.fromISO("2024-07-01T07:00:00Z").toUTC();
+
+    const datetime = [];
+    const pm25     = [];
+
+    for (let i = 0; i < nHours; i++) {
+
+      // Each timestamp is stored in UTC, as required by the package.
+      datetime.push(startUTC.plus({ hours: i }));
+
+      const localHour = i % 24;             // hour of day in local time (0–23)
+      const day       = Math.floor(i / 24); // day number (0–13)
+
+      // Typical background PM2.5 on a clean day (µg/m³).
+      const baseline = 10;
+
+      // Diurnal cycle: peaks at ~9 AM, troughs at ~9 PM.
+      // sin() produces values in [–1, +1]; offset +8 and amplitude 8
+      // keep the signal non-negative (range 0–16 µg/m³).
+      const diurnalSignal =
+        8 + 8 * Math.sin(2 * Math.PI * localHour / 24 - Math.PI / 4);
+
+      // Episodic smoke event: builds over the first 7 days and clears
+      // over the next 7. sin²() gives a smooth, symmetric bell shape.
+      // At peak (day 7) this adds ~80 µg/m³ above the baseline.
+      const episodeSignal =
+        80 * Math.pow(Math.sin(Math.PI * day / 14), 2);
+
+      // Round to 1 decimal place, consistent with typical sensor output.
+      pm25.push(
+        Math.round((baseline + diurnalSignal + episodeSignal) * 10) / 10
+      );
+    }
+
+
+    // ------------------------------------------------------------------
+    // 1. EPA NowCast
+    //
+    // The NowCast algorithm converts hourly PM2.5 values into a weighted
+    // rolling average suitable for communicating current air quality to
+    // the public. It uses a 12-hour window and gives more weight to
+    // recent hours — and responds especially fast when concentrations are
+    // changing rapidly (e.g., during a smoke event onset).
+    //
+    // The output array is the same length as the input; early entries
+    // are null until the algorithm has accumulated sufficient data.
+    // ------------------------------------------------------------------
+
+    const nowcast = pm_nowcast(pm25);
+
+
+    // ------------------------------------------------------------------
+    // 2. Daily statistics
+    //
+    // Aggregates hourly observations into one row per calendar day,
+    // using local midnight-to-midnight boundaries in the given timezone.
+    // Returns: datetime, count of valid values, min, mean, and max.
+    //
+    // The count column is useful for data-quality screening — a day with
+    // fewer than 24 valid values may not be fully representative.
+    // ------------------------------------------------------------------
+
+    const daily = dailyStats(datetime, pm25, timezone);
+
+
+    // ------------------------------------------------------------------
+    // 3. Diurnal (hourly) statistics
+    //
+    // Collapses all days onto a single "average day" profile by grouping
+    // observations by hour-of-day (0–23) across the full record.
+    // Reveals the characteristic daily shape of a pollutant signal —
+    // useful for understanding when concentrations are typically highest.
+    // ------------------------------------------------------------------
+
+    const diurnalProfile = diurnalStats(datetime, pm25, timezone, 14);
+
+
+    // ------------------------------------------------------------------
+    // Render results as HTML tables.
+    // ------------------------------------------------------------------
+
+    // Build an HTML table from a header array and an array of row arrays.
+    function buildTable(headers, rows) {
+      const head = headers.map(h => `<th>${h}</th>`).join("");
+      const body = rows
+        .map(row => `<tr>${row.map(c => `<td>${c}</td>`).join("")}</tr>`)
+        .join("");
+      return `<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+    }
+
+    // Format a number to 1 decimal place, or return "—" for null/undefined.
+    function fmt(v) {
+      return (v !== null && v !== undefined) ? Number(v).toFixed(1) : "—";
+    }
+
+    // --- NowCast: first 48 hours ---
+    const ncRows = [];
+    for (let i = 0; i < 48; i++) {
+      const localDT = datetime[i].setZone(timezone);
+      ncRows.push([
+        localDT.toFormat("yyyy-MM-dd HH:mm"),
+        fmt(pm25[i]),
+        fmt(nowcast[i]),
+      ]);
+    }
+
+    // --- Daily statistics: all 14 days ---
+    const dayRows = daily.datetime.map((dt, i) => [
+      dt.setZone(timezone).toFormat("yyyy-MM-dd"),
+      daily.count[i],
+      fmt(daily.min[i]),
+      fmt(daily.mean[i]),
+      fmt(daily.max[i]),
+    ]);
+
+    // --- Diurnal profile: hours 0–23 ---
+    const drnRows = diurnalProfile.hour.map((h, i) => [
+      `${String(h).padStart(2, "0")}:00`,
+      diurnalProfile.count[i],
+      fmt(diurnalProfile.min[i]),
+      fmt(diurnalProfile.mean[i]),
+      fmt(diurnalProfile.max[i]),
+    ]);
+
+    document.getElementById("nowcast-table").innerHTML =
+      buildTable(["Local datetime", "PM2.5 (µg/m³)", "NowCast (µg/m³)"], ncRows);
+
+    document.getElementById("daily-table").innerHTML =
+      buildTable(["Date", "Count", "Min (µg/m³)", "Mean (µg/m³)", "Max (µg/m³)"], dayRows);
+
+    document.getElementById("diurnal-table").innerHTML =
+      buildTable(["Hour", "Count", "Min (µg/m³)", "Mean (µg/m³)", "Max (µg/m³)"], drnRows);
+
   </script>
+
 </body>
 </html>
-

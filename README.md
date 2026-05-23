@@ -85,6 +85,10 @@ console.log(nowcast.slice(-5)); // → last 5 hourly NowCast values
 - [air-monitor](https://www.npmjs.com/package/air-monitor)
 - [air-monitor-plots](https://www.npmjs.com/package/air-monitor-plots)
 
+## Contributing
+
+For build, test, and publish instructions, see [README_dev.md](README_dev.md).
+
 ## License
 
 GPL-3.0-or-later
