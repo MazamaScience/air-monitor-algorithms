@@ -1,3 +1,8 @@
+# air-monitor-algorithms 1.2.7
+
+- edge case bug fixes
+- improved demonstration page
+
 # air-monitor-algorithms 1.2.6
 
 Finally sorted out npm publishing.
