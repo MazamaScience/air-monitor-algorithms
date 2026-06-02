@@ -28,7 +28,7 @@ Babel
 
 ## Publish
 
-NPM
+`npm publish:public`
 
 _NOTE: You need to have an npm account._
 
