@@ -5,7 +5,6 @@ import {
   arrayMean,
   arrayMax,
   roundAndUseNull,
-  useNull,
 } from "./utils.js";
 
 /**
