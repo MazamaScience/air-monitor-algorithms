@@ -1,5 +1,5 @@
 /**
- * air-monitor-algorithms v1.0.4
+ * air-monitor-algorithms v1.2.7
  *
  * Scientific algorithms for analyzing hourly environmental sensor data,
  * especially air quality measurements.
