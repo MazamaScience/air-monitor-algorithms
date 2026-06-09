@@ -56,7 +56,7 @@ export function diurnalStats(datetime, x, timezone, dayCount = 7) {
   // For each hour of the day (0–23), compute stats across days
   for (let h = 0; h < 24; h++) {
     let min = Number.MAX_VALUE;
-    let max = Number.MIN_VALUE;
+    let max = -Infinity;
     let count = 0;
     let sum = null;
 
@@ -74,8 +74,8 @@ export function diurnalStats(datetime, x, timezone, dayCount = 7) {
     }
 
     hour[h] = h;
-    hourlyMin[h] = min === Number.MAX_VALUE ? null : min;
-    hourlyMax[h] = max === Number.MIN_VALUE ? null : max;
+    hourlyMin[h] = count === 0 ? null : min;
+    hourlyMax[h] = count === 0 ? null : max;
     hourlyCount[h] = count;
     hourlyMean[h] = sum === null ? null : sum / count;
   }

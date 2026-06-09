@@ -119,4 +119,26 @@ test("min and max differ when input is not flat", () => {
   assert.ok(result2.max[23] > result2.min[23]);
 });
 
+test("max is not null when all values are zero", () => {
+  const zeros = Array(24 * 7).fill(0);
+  const zeroDatetime = datetime.slice(0, zeros.length);
+  const result = diurnalStats(zeroDatetime, zeros, "UTC");
+
+  assert.equal(result.count, counts_7);
+  assert.equal(result.min, Array(24).fill(0));
+  assert.equal(result.mean, Array(24).fill(0));
+  assert.equal(result.max, Array(24).fill(0));
+});
+
+test("max is correct when all values are negative", () => {
+  const negatives = Array(24 * 7).fill(-5);
+  const negativeDatetime = datetime.slice(0, negatives.length);
+  const result = diurnalStats(negativeDatetime, negatives, "UTC");
+
+  assert.equal(result.count, counts_7);
+  assert.equal(result.min, Array(24).fill(-5));
+  assert.equal(result.mean, Array(24).fill(-5));
+  assert.equal(result.max, Array(24).fill(-5));
+});
+
 test.run();
