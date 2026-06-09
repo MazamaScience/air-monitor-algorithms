@@ -94,11 +94,11 @@ Ten small, low-risk tasks, favoring reliability / clarity / docs / maintenance:
 
 | #  | Title | Why valuable | Effort | Risk |
 |----|-------|--------------|--------|------|
-| 1  | Fix `max` sentinel in `diurnalStats` (H1) | Eliminates silent wrong `null` for zero/negative hours — a real correctness bug | Small | Low |
-| 2  | Add regression tests for zero & negative data | Locks in the H1 fix; current fixtures are all positive | Small | Low |
-| 3  | Remove unused `useNull` import in `dailyStats.js` (M2) | Clarity; avoids lint noise | Small | Low |
+| **1 DONE**  | Fix `max` sentinel in `diurnalStats` (H1) | Eliminates silent wrong `null` for zero/negative hours — a real correctness bug | Small | Low |
+| **2 DONE**  | Add regression tests for zero & negative data | Locks in the H1 fix; current fixtures are all positive | Small | Low |
+| **3 DONE**  | Remove unused `useNull` import in `dailyStats.js` (M2) | Clarity; avoids lint noise | Small | Low |
 | 4  | Refactor `diurnalStats` to reuse `arrayMin/Max/Mean/Count` (L2) | Consistency with `dailyStats`; removes the sentinel class of bugs | Medium | Low |
-| 5  | Update stale `v1.0.4` header in `index.js` (L1) | Avoids misleading version info | Small | Low |
+| **5 DONE**  | Update stale `v1.0.4` header in `index.js` (L1) | Avoids misleading version info | Small | Low |
 | 6  | Document the 24-hour / DST assumption (M1) | Sets correct expectations for maintainers/consumers | Small | Low |
 | 7  | Document `roundAndUseNull` & `useNull` in README (L4) | Completes public API docs | Small | Low |
 | 8  | Define & test `pm_nowcast([0,0,…])` behavior (L3) | Removes an ambiguous edge case | Small | Low |
