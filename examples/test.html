@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>air-monitor-algorithms — Visual Example</title>
+
+  <!--
+    Pico.css — a lightweight, classless CSS framework. It styles plain
+    semantic HTML (<main>, <article>, <h2>, <table>…) with no extra markup,
+    giving the page a clean look without a build step.
+  -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+  />
+
+  <style>
+    main.container { max-width: 900px; }
+    hgroup { margin-bottom: 1.5rem; }
+    .chart-wrap { position: relative; height: 320px; }
+    .muted { color: var(--pico-muted-color); font-size: 0.9rem; }
+    article { padding-top: 1rem; }
+  </style>
+</head>
+<body>
+
+  <main class="container">
+
+    <hgroup>
+      <h1>air-monitor-algorithms</h1>
+      <p>
+        A visual walk-through of three core functions
+      </p>
+    </hgroup>
+
+    <!-- ============================================================
+         Intro
+    ============================================================ -->
+    <p>
+      The
+      <a href="https://mazamascience.github.io/air-monitor-algorithms/">air-monitor-algorithms</a>
+      package provides algorithms for analyzing hourly air quality time series.
+      All timestamps are UTC
+      <a href="https://moment.github.io/luxon/">Luxon</a> <code>DateTime</code>
+      objects, and missing values are represented as <code>null</code>.
+    </p>
+    <p class="muted">
+      This page generates a 336-hour (14-day) synthetic PM2.5 dataset for
+      <em>America/Los_Angeles</em>, modeling a clean-air baseline, a daily
+      (diurnal) cycle, and a multi-day wildfire-smoke event peaking around day 7.
+      Charts are drawn with <a href="https://www.chartjs.org/">Chart.js</a>.
+    </p>
+
+
+    <!-- ============================================================
+         NowCast
+    ============================================================ -->
+    <article>
+      <h2>NowCast vs. raw PM2.5</h2>
+      <p>
+        <code>pm_nowcast(pm25)</code> implements the US EPA NowCast algorithm: a
+        12-hour weighted rolling average that tracks rapid changes (such as the
+        onset of a smoke event) far more responsively than a simple average,
+        while smoothing hour-to-hour noise. The first hours are <code>null</code>
+        until enough data has accumulated.
+      </p>
+      <div class="chart-wrap"><canvas id="nowcastChart"></canvas></div>
+    </article>
+
+
+    <!-- ============================================================
+         Daily statistics
+    ============================================================ -->
+    <article>
+      <h2>Daily statistics</h2>
+      <p>
+        <code>dailyStats(datetime, pm25, timezone)</code> aggregates each
+        local calendar day (midnight-to-midnight in the given timezone) into
+        min / mean / max. The rise and fall of the smoke event is clearly
+        visible across the two weeks.
+      </p>
+      <div class="chart-wrap"><canvas id="dailyChart"></canvas></div>
+    </article>
+
+
+    <!-- ============================================================
+         Diurnal profile
+    ============================================================ -->
+    <article>
+      <h2>Diurnal profile (average day)</h2>
+      <p>
+        <code>diurnalStats(datetime, pm25, timezone, 14)</code> collapses all 14
+        days onto a single 24-hour profile by grouping observations by
+        hour-of-day. This reveals the characteristic daily shape — here a mean
+        that peaks in the morning, with the min/max band showing the spread
+        between clean days and smoke-event days.
+      </p>
+      <div class="chart-wrap"><canvas id="diurnalChart"></canvas></div>
+    </article>
+
+    <footer>
+      <p class="muted">
+        View the page source to see the complete, copy-pasteable example code.
+      </p>
+    </footer>
+
+  </main>
+
+
+  <!-- ============================================================
+       Libraries (all loaded from CDN — no build step)
+  ============================================================ -->
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3.6.1/build/global/luxon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/air-monitor-algorithms@1.2.7/dist/air-monitor-algorithms.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <script>
+    // ------------------------------------------------------------------
+    // Unpack the tools we need from each library.
+    // ------------------------------------------------------------------
+    const { DateTime } = luxon;
+    const { pm_nowcast, dailyStats, diurnalStats } = AirMonitorAlgorithms;
+
+    // All day-boundary calculations use this timezone.
+    const timezone = "America/Los_Angeles";
+
+
+    // ------------------------------------------------------------------
+    // Generate 14 days of synthetic hourly PM2.5 data.
+    //
+    //   baseline      — constant clean-air background (10 µg/m³)
+    //   diurnalSignal — 24-hour cycle peaking ~9 AM (0–16 µg/m³)
+    //   episodeSignal — smooth multi-day smoke event peaking at day 7
+    //
+    // Start at 2024-07-01T07:00:00Z = 2024-07-01T00:00:00 PDT so that
+    // trimDate() sees exactly 14 full local calendar days.
+    // ------------------------------------------------------------------
+    const nHours   = 14 * 24; // 336 hourly observations
+    const startUTC = DateTime.fromISO("2024-07-01T07:00:00Z").toUTC();
+
+    const datetime = [];
+    const pm25     = [];
+
+    for (let i = 0; i < nHours; i++) {
+      datetime.push(startUTC.plus({ hours: i }));
+
+      const localHour = i % 24;
+      const day       = Math.floor(i / 24);
+
+      const baseline      = 10;
+      const diurnalSignal = 8 + 8 * Math.sin((2 * Math.PI * localHour) / 24 - Math.PI / 4);
+      const episodeSignal = 80 * Math.pow(Math.sin((Math.PI * day) / 14), 2);
+
+      pm25.push(Math.round((baseline + diurnalSignal + episodeSignal) * 10) / 10);
+    }
+
+    // Demonstrate missing-value handling: knock out a few hours on day 12.
+    // These appear as gaps in the NowCast chart and reduce that day's count.
+    [288, 289, 290, 291].forEach((i) => (pm25[i] = null));
+
+
+    // ------------------------------------------------------------------
+    // Run the three algorithms.
+    // ------------------------------------------------------------------
+    const nowcast        = pm_nowcast(pm25);
+    const daily          = dailyStats(datetime, pm25, timezone);
+    const diurnalProfile = diurnalStats(datetime, pm25, timezone, 14);
+
+
+    // ------------------------------------------------------------------
+    // Render the charts.
+    // ------------------------------------------------------------------
+    Chart.defaults.font.family =
+      getComputedStyle(document.body).fontFamily || "sans-serif";
+    Chart.defaults.maintainAspectRatio = false;
+
+    const C = {
+      raw:    "#9aa4b2",
+      accent: "#1095c1", // matches Pico's primary
+      min:    "#7fb069",
+      mean:   "#1095c1",
+      max:    "#d1495b",
+    };
+
+    // --- NowCast vs. raw PM2.5 (full 14 days) ---
+    const hourLabels = datetime.map((dt) => dt.setZone(timezone).toFormat("MM-dd HH:mm"));
+    new Chart(document.getElementById("nowcastChart"), {
+      type: "line",
+      data: {
+        labels: hourLabels,
+        datasets: [
+          {
+            label: "Raw PM2.5",
+            data: pm25,
+            borderColor: C.raw,
+            borderWidth: 1,
+            pointRadius: 0,
+            spanGaps: false, // show null values as gaps
+          },
+          {
+            label: "NowCast",
+            data: nowcast,
+            borderColor: C.accent,
+            borderWidth: 2,
+            pointRadius: 0,
+            spanGaps: false,
+          },
+        ],
+      },
+      options: {
+        interaction: { mode: "index", intersect: false },
+        scales: {
+          x: { ticks: { maxTicksLimit: 14, autoSkip: true } },
+          y: { title: { display: true, text: "µg/m³" }, beginAtZero: true },
+        },
+      },
+    });
+
+    // --- Daily statistics (min / mean / max) ---
+    const dayLabels = daily.datetime.map((dt) => dt.setZone(timezone).toFormat("MM-dd"));
+    new Chart(document.getElementById("dailyChart"), {
+      type: "line",
+      data: {
+        labels: dayLabels,
+        datasets: [
+          { label: "Max",  data: daily.max,  borderColor: C.max,  borderWidth: 2, pointRadius: 2, tension: 0.3 },
+          { label: "Mean", data: daily.mean, borderColor: C.mean, borderWidth: 2, pointRadius: 2, tension: 0.3 },
+          { label: "Min",  data: daily.min,  borderColor: C.min,  borderWidth: 2, pointRadius: 2, tension: 0.3 },
+        ],
+      },
+      options: {
+        interaction: { mode: "index", intersect: false },
+        scales: {
+          y: { title: { display: true, text: "µg/m³" }, beginAtZero: true },
+        },
+      },
+    });
+
+    // --- Diurnal profile (hour 0–23, min / mean / max) ---
+    const hourOfDayLabels = diurnalProfile.hour.map((h) => String(h).padStart(2, "0") + ":00");
+    new Chart(document.getElementById("diurnalChart"), {
+      type: "line",
+      data: {
+        labels: hourOfDayLabels,
+        datasets: [
+          { label: "Max",  data: diurnalProfile.max,  borderColor: C.max,  borderWidth: 2, pointRadius: 2, tension: 0.4 },
+          { label: "Mean", data: diurnalProfile.mean, borderColor: C.mean, borderWidth: 3, pointRadius: 2, tension: 0.4 },
+          { label: "Min",  data: diurnalProfile.min,  borderColor: C.min,  borderWidth: 2, pointRadius: 2, tension: 0.4 },
+        ],
+      },
+      options: {
+        interaction: { mode: "index", intersect: false },
+        scales: {
+          x: { title: { display: true, text: "Hour of day (local)" } },
+          y: { title: { display: true, text: "µg/m³" }, beginAtZero: true },
+        },
+      },
+    });
+  </script>
+
+</body>
+</html>
