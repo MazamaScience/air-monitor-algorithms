@@ -130,15 +130,41 @@ test("max is not null when all values are zero", () => {
   assert.equal(result.max, Array(24).fill(0));
 });
 
-test("max is correct when all values are negative", () => {
+test("small negatives are clamped to 0 (default 'keep' QC)", () => {
+  // -5 is within [-10, 0), so the "keep" QC treats it as instrument noise
+  // and clamps it to 0. The values remain valid, so count is unchanged.
   const negatives = Array(24 * 7).fill(-5);
   const negativeDatetime = datetime.slice(0, negatives.length);
   const result = diurnalStats(negativeDatetime, negatives, "UTC");
 
   assert.equal(result.count, counts_7);
-  assert.equal(result.min, Array(24).fill(-5));
-  assert.equal(result.mean, Array(24).fill(-5));
-  assert.equal(result.max, Array(24).fill(-5));
+  assert.equal(result.min, Array(24).fill(0));
+  assert.equal(result.mean, Array(24).fill(0));
+  assert.equal(result.max, Array(24).fill(0));
+});
+
+test("values below -10 are dropped as missing (default 'keep' QC)", () => {
+  // -50 is below -10, so the "keep" QC drops it as missing (null). With no
+  // valid values, count is 0 and all statistics are null.
+  const veryNegative = Array(24 * 7).fill(-50);
+  const veryNegativeDatetime = datetime.slice(0, veryNegative.length);
+  const result = diurnalStats(veryNegativeDatetime, veryNegative, "UTC");
+
+  assert.equal(result.count, Array(24).fill(0));
+  assert.equal(result.min, Array(24).fill(null));
+  assert.equal(result.mean, Array(24).fill(null));
+  assert.equal(result.max, Array(24).fill(null));
+});
+
+test("'drop' QC mode sets all negatives to missing", () => {
+  const negatives = Array(24 * 7).fill(-5);
+  const negativeDatetime = datetime.slice(0, negatives.length);
+  const result = diurnalStats(negativeDatetime, negatives, "UTC", 7, "drop");
+
+  assert.equal(result.count, Array(24).fill(0));
+  assert.equal(result.min, Array(24).fill(null));
+  assert.equal(result.mean, Array(24).fill(null));
+  assert.equal(result.max, Array(24).fill(null));
 });
 
 test.run();

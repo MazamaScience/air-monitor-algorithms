@@ -5,6 +5,7 @@ import {
   arrayMean,
   arrayMax,
   roundAndUseNull,
+  qcType,
 } from "./utils.js";
 
 /**
@@ -20,9 +21,12 @@ import {
  * @param {Array.<DateTime>} datetime - Hourly UTC timestamps as Luxon DateTime objects.
  * @param {Array.<number>} x - Array of hourly values.
  * @param {string} timezone - Olson time zone (e.g. "America/Los_Angeles").
+ * @param {string} qc - Negative-value QC mode passed to qcType: "keep"
+ *   (clamp small negatives to 0, drop values below -10) or "drop" (drop all
+ *   negatives). Default: "keep".
  * @returns {object} - Object with datetime, count, min, mean, and max arrays.
  */
-export function dailyStats(datetime, x, timezone) {
+export function dailyStats(datetime, x, timezone, qc = "keep") {
   // Trim to full days in the specified local timezone
   const trimmed = trimDate(datetime, x, timezone);
 
@@ -45,6 +49,10 @@ export function dailyStats(datetime, x, timezone) {
 
   const dayCount = trimmed.datetime.length / 24;
 
+  // Apply the negative-value QC pass before computing daily statistics. The qc
+  // mode controls how negatives are handled (see qcType).
+  const qcValues = qcType(trimmed.x, qc);
+
   const dailyDatetime = [];
   const dailyCount = [];
   const dailyMin = [];
@@ -58,8 +66,8 @@ export function dailyStats(datetime, x, timezone) {
     // Each day’s timestamp is the first hour of the day
     dailyDatetime[i] = trimmed.datetime[start];
 
-    // Daily stats are calculated using 24 hourly values
-    const values = trimmed.x.slice(start, end);
+    // Daily stats are calculated using 24 QC'd hourly values
+    const values = qcValues.slice(start, end);
     dailyCount[i] = arrayCount(values);
     dailyMin[i] = arrayMin(values);
     dailyMean[i] = arrayMean(values);

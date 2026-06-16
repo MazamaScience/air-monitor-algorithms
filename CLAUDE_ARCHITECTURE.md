@@ -94,7 +94,7 @@ All source lives in `src/`. Each module is small and single-purpose:
 | Module              | Exports                                   | Role |
 |---------------------|-------------------------------------------|------|
 | `src/index.js`      | (re-exports everything)                   | Public API surface; the only entry Rollup bundles. |
-| `src/utils.js`      | `arrayMin/Max/Count/Sum/Mean`, `useNull`, `roundAndUseNull` | Array primitives; null-aware stats. No dependencies. |
+| `src/utils.js`      | `arrayMin/Max/Count/Sum/Mean`, `useNull`, `roundAndUseNull`, `qcType` | Array primitives; null-aware stats; negative-value QC. No dependencies. |
 | `src/trimDate.js`   | `trimDate`                                | Trims a series to full local calendar days. Only module that imports Luxon directly. |
 | `src/dailyStats.js` | `dailyStats`                              | Per-day min/mean/max/count. Builds on `trimDate` + `utils`. |
 | `src/diurnalStats.js`| `diurnalStats`                           | Hour-of-day averages over recent days. Builds on `trimDate` + `utils`. |
@@ -108,10 +108,10 @@ index.js ──exports──▶ all public functions
 trimDate.js ──imports──▶ luxon (DateTime)
 
 dailyStats.js   ──┬─▶ trimDate.js
-                  └─▶ utils.js (arrayCount/Min/Mean/Max, roundAndUseNull, useNull)
+                  └─▶ utils.js (arrayCount/Min/Mean/Max, roundAndUseNull, qcType)
 
 diurnalStats.js ──┬─▶ trimDate.js
-                  └─▶ utils.js (roundAndUseNull, useNull)
+                  └─▶ utils.js (roundAndUseNull, qcType)
 
 nowcast.js ───────────▶ utils.js (roundAndUseNull)
 ```
@@ -183,6 +183,8 @@ most significant API-shaping changes.
 | Fewer than 24 aligned hourly values                  | return empty result object| `dailyStats.js`, `diurnalStats.js` |
 | Fewer than 2 valid values in most recent 3 hours     | return `null` for that NowCast | `nowcast.js` |
 | Non-finite / missing numeric value                   | normalized to `null`      | `utils.js` (`useNull`) |
+| Negative value (per `qc` mode, default `"keep"`)     | clamped to `0` or `null`  | `utils.js` (`qcType`) |
+| Invalid `qc` type passed to `qcType`                 | `throw Error`             | `utils.js` (`qcType`) |
 
 There is no logging layer; this is a library, so errors propagate to the caller
 rather than being logged. Failures are surfaced loudly (thrown) or represented

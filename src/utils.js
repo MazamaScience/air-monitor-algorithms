@@ -100,3 +100,52 @@ export function arrayMean(x) {
   const valid = useNull(x).filter((v) => v !== null);
   return valid.length > 0 ? arraySum(valid) / valid.length : null;
 }
+
+
+
+/**
+ * qcType
+ *
+ * Apply a quality-control pass for negative values to an array of measurements.
+ * Negative concentrations are not physically meaningful for the data this
+ * library handles, so they must be corrected or removed before computing
+ * statistics. How aggressively they are removed depends on the QC mode.
+ *
+ * Modes:
+ * * "keep" -- Salvage near-zero readings. Small negatives in [-10, 0) are
+ *             treated as instrument noise and clamped to 0; values below -10
+ *             are considered unrecoverable and set to `null` (missing).
+ * * "drop" -- Strict. Any negative value is set to `null` (missing).
+ *
+ * In both modes, non-numeric or missing values (NaN, undefined, null) become
+ * `null`, and non-negative values pass through unchanged.
+ *
+ * @param {Array<*>} x - Input array of values (e.g. PM2.5 concentrations).
+ * @param {string} type - QC mode: "keep" or "drop".
+ * @returns {Array<number|null>} - New array with QC applied.
+ * @throws {Error} If `type` is not "keep" or "drop".
+ */
+export function qcType(x, type) {
+  if (type !== "keep" && type !== "drop") {
+    throw new Error(
+      `qcType: invalid type "${type}"; expected "keep" or "drop".`
+    );
+  }
+
+  return x.map((value) => {
+    // Treat any non-numeric or missing value as missing
+    if (!Number.isFinite(value)) return null;
+
+    // Non-negative values are valid and pass through unchanged
+    if (value >= 0) return value;
+
+    if (type === "drop") {
+      // Strict mode: any negative value is dropped as missing
+      return null;
+    }
+
+    // "keep" mode: clamp small negatives (instrument noise) to 0,
+    // but drop values that are too negative to be salvageable.
+    return value < -10 ? null : 0;
+  });
+}

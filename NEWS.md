@@ -1,3 +1,11 @@
+# air-monitor-algorithms 1.3.0
+
+- Added `qcType(x, type)` utility to apply a negative-value quality-control
+  pass. Mode `"keep"` clamps small negatives in `[-10, 0)` to `0` and drops
+  values below `-10` to `null`; mode `"drop"` sets all negatives to `null`.
+- `dailyStats` and `diurnalStats` now accept an optional `qc` argument
+  (default `"keep"`) and apply this QC pass before computing statistics.
+
 # air-monitor-algorithms 1.2.7
 
 - edge case bug fixes

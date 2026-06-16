@@ -1,5 +1,5 @@
 import { trimDate } from "./trimDate.js";
-import { roundAndUseNull, useNull } from "./utils.js";
+import { roundAndUseNull, qcType } from "./utils.js";
 
 /**
  * Calculate hourly (diurnal) statistics over recent days.
@@ -17,9 +17,12 @@ import { roundAndUseNull, useNull } from "./utils.js";
  * @param {Array.<number>} x - Matching array of values (e.g. PM2.5).
  * @param {string} timezone - Olson timezone string (e.g. "America/Los_Angeles").
  * @param {number} dayCount - Number of days to include (default: 7).
+ * @param {string} qc - Negative-value QC mode passed to qcType: "keep"
+ *   (clamp small negatives to 0, drop values below -10) or "drop" (drop all
+ *   negatives). Default: "keep".
  * @returns {object} - Object with hour, count, min, mean, and max arrays.
  */
-export function diurnalStats(datetime, x, timezone, dayCount = 7) {
+export function diurnalStats(datetime, x, timezone, dayCount = 7, qc = "keep") {
   // Trim to full local days
   const trimmed = trimDate(datetime, x, timezone);
 
@@ -43,8 +46,10 @@ export function diurnalStats(datetime, x, timezone, dayCount = 7) {
   dayCount = fullDayCount < dayCount ? fullDayCount : dayCount;
   const startIndex = trimmed.datetime.length - dayCount * 24;
 
-  // Clean data and mark valid values
-  const values = useNull(trimmed.x);
+  // Apply the negative-value QC pass and mark valid values. The qc mode
+  // controls how negatives are handled (see qcType); "keep" clamps small
+  // negatives to 0 and drops values below -10 as missing.
+  const values = qcType(trimmed.x, qc);
   const validFlags = values.map((v) => (v === null ? 0 : 1));
 
   const hour = [];
@@ -64,11 +69,15 @@ export function diurnalStats(datetime, x, timezone, dayCount = 7) {
       const index = startIndex + h + d * 24;
 
       if (validFlags[index] === 1) {
+        // Values have already been QC'd by qcType above, so every valid value
+        // here is non-negative (or was dropped to null and skipped).
+        const value = values[index];
+
         if (sum === null) sum = 0;
 
-        min = values[index] < min ? values[index] : min;
-        max = values[index] > max ? values[index] : max;
-        sum += values[index];
+        min = value < min ? value : min;
+        max = value > max ? value : max;
+        sum += value;
         count += 1;
       }
     }

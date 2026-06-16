@@ -19,10 +19,10 @@ Service.
 
 High-level analysis functions:
 
-- `dailyStats(datetime, x, timezone)`
+- `dailyStats(datetime, x, timezone, qc)`
   Returns local-time daily statistics (min, max, mean, count) from hourly data.
 
-- `diurnalStats(datetime, x, timezone, dayCount)`
+- `diurnalStats(datetime, x, timezone, dayCount, qc)`
   Returns local-time hourly averages from the most recent `dayCount` days.
 
 - `pm_nowcast(pm)`
@@ -31,6 +31,10 @@ High-level analysis functions:
 - `trimDate(datetime, x, timezone)`
   Trims input to full local-time days (midnight to midnight).
 
+Both `dailyStats` and `diurnalStats` accept an optional `qc` argument
+(default `"keep"`) controlling how negative values are handled before
+statistics are computed (see `qcType` below).
+
 Array utility functions:
 
 - `arrayCount(x)` — Count of non-missing (`!= null`) values
@@ -38,6 +42,16 @@ Array utility functions:
 - `arrayMin(x)` — Minimum valid value
 - `arrayMean(x)` — Mean of valid values
 - `arrayMax(x)` — Maximum valid value
+
+Quality-control and cleanup utilities:
+
+- `qcType(x, type)` — Apply a negative-value QC pass. With `type = "keep"`,
+  small negatives in `[-10, 0)` are clamped to `0` and values below `-10`
+  become `null`; with `type = "drop"`, all negatives become `null`.
+- `useNull(x)` — Replace non-numeric / missing values (`NaN`, `undefined`,
+  `null`) with `null`.
+- `roundAndUseNull(x, digits)` — Round valid values to `digits` decimal places
+  (default `1`) and convert invalid values to `null`.
 
 ## Installation
 
