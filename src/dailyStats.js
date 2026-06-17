@@ -25,6 +25,13 @@ import {
  *   (clamp small negatives to 0, drop values below -10) or "drop" (drop all
  *   negatives). Default: "keep".
  * @returns {object} - Object with datetime, count, min, mean, and max arrays.
+ * @example
+ * const result = dailyStats(datetime, pm25, "America/Los_Angeles");
+ * // result.datetime  — one UTC DateTime per day (start of local day)
+ * // result.count     — [24, 23, 24, ...]  (valid hourly readings per day)
+ * // result.min       — [2.1, null, 5.3, ...]
+ * // result.mean      — [8.4, null, 12.1, ...]
+ * // result.max       — [18.7, null, 22.0, ...]
  */
 export function dailyStats(datetime, x, timezone, qc = "keep") {
   // Trim to full days in the specified local timezone

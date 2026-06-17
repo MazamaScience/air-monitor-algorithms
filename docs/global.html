@@ -206,7 +206,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line73">line 73</a>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line87">line 87</a>
     </li></ul></dd>
     
 
@@ -257,6 +257,12 @@
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>arrayCount([5, null, 2, null, 8])  // => 3
+arrayCount([null, null])           // => 0</code></pre>
 
 
 
@@ -369,7 +375,7 @@ Returns null if no valid numbers are present.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line60">line 60</a>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line71">line 71</a>
     </li></ul></dd>
     
 
@@ -423,6 +429,12 @@ Returns null if no valid numbers are present.</p>
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>arrayMax([5, null, 2, null, 8])  // => 8
+arrayMax([null, null])           // => null</code></pre>
 
 
 
@@ -535,7 +547,7 @@ Returns null if no valid numbers are present.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line99">line 99</a>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line119">line 119</a>
     </li></ul></dd>
     
 
@@ -589,6 +601,12 @@ Returns null if no valid numbers are present.</p>
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>arrayMean([5, null, 2, null, 8])  // => 5
+arrayMean([null, null])           // => null</code></pre>
 
 
 
@@ -701,7 +719,7 @@ Returns null if no valid numbers are present.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line46">line 46</a>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line54">line 54</a>
     </li></ul></dd>
     
 
@@ -755,6 +773,12 @@ Returns null if no valid numbers are present.</p>
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>arrayMin([5, null, 2, null, 8])  // => 2
+arrayMin([null, null])           // => null</code></pre>
 
 
 
@@ -866,7 +890,7 @@ Returns null if no valid numbers are present.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line85">line 85</a>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line102">line 102</a>
     </li></ul></dd>
     
 
@@ -922,6 +946,12 @@ Returns null if no valid numbers are present.</p>
 
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>arraySum([5, null, 2, null, 8])  // => 15
+arraySum([null, null])           // => null</code></pre>
+
+
 
         
             
@@ -929,7 +959,7 @@ Returns null if no valid numbers are present.</p>
     
 
     
-    <h4 class="name" id="dailyStats"><span class="type-signature"></span>dailyStats<span class="signature">(datetime, x, timezone)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    <h4 class="name" id="dailyStats"><span class="type-signature"></span>dailyStats<span class="signature">(datetime, x, timezone, qc)</span><span class="type-signature"> &rarr; {object}</span></h4>
     
 
     
@@ -1047,6 +1077,31 @@ Returns null if no valid numbers are present.</p>
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>qc</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Negative-value QC mode passed to qcType: &quot;keep&quot;
+(clamp small negatives to 0, drop values below -10) or &quot;drop&quot; (drop all
+negatives). Default: &quot;keep&quot;.</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -1084,7 +1139,7 @@ Returns null if no valid numbers are present.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dailyStats.js.html">dailyStats.js</a>, <a href="dailyStats.js.html#line26">line 26</a>
+        <a href="dailyStats.js.html">dailyStats.js</a>, <a href="dailyStats.js.html#line36">line 36</a>
     </li></ul></dd>
     
 
@@ -1137,6 +1192,16 @@ Returns null if no valid numbers are present.</p>
 
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const result = dailyStats(datetime, pm25, "America/Los_Angeles");
+// result.datetime  — one UTC DateTime per day (start of local day)
+// result.count     — [24, 23, 24, ...]  (valid hourly readings per day)
+// result.min       — [2.1, null, 5.3, ...]
+// result.mean      — [8.4, null, 12.1, ...]
+// result.max       — [18.7, null, 22.0, ...]</code></pre>
+
+
 
         
             
@@ -1144,7 +1209,7 @@ Returns null if no valid numbers are present.</p>
     
 
     
-    <h4 class="name" id="diurnalStats"><span class="type-signature"></span>diurnalStats<span class="signature">(datetime, x, timezone, dayCount)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    <h4 class="name" id="diurnalStats"><span class="type-signature"></span>diurnalStats<span class="signature">(datetime, x, timezone, dayCount, qc)</span><span class="type-signature"> &rarr; {object}</span></h4>
     
 
     
@@ -1286,6 +1351,31 @@ Returns null if no valid numbers are present.</p>
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>qc</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Negative-value QC mode passed to qcType: &quot;keep&quot;
+(clamp small negatives to 0, drop values below -10) or &quot;drop&quot; (drop all
+negatives). Default: &quot;keep&quot;.</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -1323,7 +1413,7 @@ Returns null if no valid numbers are present.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="diurnalStats.js.html">diurnalStats.js</a>, <a href="diurnalStats.js.html#line22">line 22</a>
+        <a href="diurnalStats.js.html">diurnalStats.js</a>, <a href="diurnalStats.js.html#line32">line 32</a>
     </li></ul></dd>
     
 
@@ -1374,6 +1464,16 @@ Returns null if no valid numbers are present.</p>
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const result = diurnalStats(datetime, pm25, "America/Los_Angeles");
+// result.hour   — [0, 1, 2, ..., 23]
+// result.count  — [7, 7, 7, ..., 6]   (days contributing to each hour)
+// result.min    — [1.2, 0.8, ..., 3.1]
+// result.mean   — [4.5, 3.2, ..., 9.8]
+// result.max    — [12.0, 8.4, ..., 22.3]</code></pre>
 
 
 
@@ -1488,7 +1588,7 @@ may contain <code>null</code> due to insufficient data.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="nowcast.js.html">nowcast.js</a>, <a href="nowcast.js.html#line15">line 15</a>
+        <a href="nowcast.js.html">nowcast.js</a>, <a href="nowcast.js.html#line20">line 20</a>
     </li></ul></dd>
     
 
@@ -1539,6 +1639,249 @@ may contain <code>null</code> due to insufficient data.</p>
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>pm_nowcast([null, null, 10, 12, 15, 14, 11])
+// => [null, null, 10.0, 11.3, 12.8, 13.3, 12.1]
+// Early entries are null due to insufficient data (fewer than 2 valid
+// values in the most recent 3 hours, per EPA NowCast requirements).</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="qcType"><span class="type-signature"></span>qcType<span class="signature">(x, type)</span><span class="type-signature"> &rarr; {Array.&lt;(number|null)>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>qcType</p>
+<p>Apply a quality-control pass for negative values to an array of measurements.
+Negative concentrations are not physically meaningful for the data this
+library handles, so they must be corrected or removed before computing
+statistics. How aggressively they are removed depends on the QC mode.</p>
+<p>Modes:</p>
+<ul>
+<li>&quot;keep&quot; -- Salvage near-zero readings. Small negatives in [-10, 0) are
+treated as instrument noise and clamped to 0; values below -10
+are considered unrecoverable and set to <code>null</code> (missing).</li>
+<li>&quot;drop&quot; -- Strict. Any negative value is set to <code>null</code> (missing).</li>
+</ul>
+<p>In both modes, non-numeric or missing values (NaN, undefined, null) become
+<code>null</code>, and non-negative values pass through unchanged.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>x</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;*></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Input array of values (e.g. PM2.5 concentrations).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>QC mode: &quot;keep&quot; or &quot;drop&quot;.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line154">line 154</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        <p>If <code>type</code> is not &quot;keep&quot; or &quot;drop&quot;.</p>
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>New array with QC applied.</li>
+</ul>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;(number|null)></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// "keep": clamp small negatives to 0, drop values below -10
+qcType([5, -2, -15, null], "keep")  // => [5, 0, null, null]
+
+// "drop": remove all negatives
+qcType([5, -2, -15, null], "drop")  // => [5, null, null, null]</code></pre>
 
 
 
@@ -1675,7 +2018,7 @@ will be converted to <code>null</code>.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line12">line 12</a>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line15">line 15</a>
     </li></ul></dd>
     
 
@@ -1726,6 +2069,12 @@ will be converted to <code>null</code>.</p>
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>roundAndUseNull([1.234, null, NaN, 5.678])  // => [1.2, null, null, 5.7]
+roundAndUseNull([1.234, 5.678], 0)           // => [1, 6]</code></pre>
 
 
 
@@ -1884,7 +2233,7 @@ time zone to determine day boundaries, but always returns timestamps in UTC.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="trimDate.js.html">trimDate.js</a>, <a href="trimDate.js.html#line14">line 14</a>
+        <a href="trimDate.js.html">trimDate.js</a>, <a href="trimDate.js.html#line19">line 19</a>
     </li></ul></dd>
     
 
@@ -1935,6 +2284,14 @@ time zone to determine day boundaries, but always returns timestamps in UTC.</p>
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// Series starting at 06:00 UTC (22:00 PST prior day) is trimmed to begin
+// at the first local midnight boundary.
+const { datetime, x } = trimDate(myDatetimes, myValues, "America/Los_Angeles");
+// datetime[0].hour === 8  (08:00 UTC = 00:00 PST)</code></pre>
 
 
 
@@ -2047,7 +2404,7 @@ are replaced by <code>null</code>.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line33">line 33</a>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line38">line 38</a>
     </li></ul></dd>
     
 
@@ -2100,6 +2457,11 @@ are replaced by <code>null</code>.</p>
 
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>useNull([1, null, NaN, undefined, 5])  // => [1, null, null, null, 5]</code></pre>
+
+
 
         
     
@@ -2117,13 +2479,13 @@ are replaced by <code>null</code>.</p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#arrayCount">arrayCount</a></li><li><a href="global.html#arrayMax">arrayMax</a></li><li><a href="global.html#arrayMean">arrayMean</a></li><li><a href="global.html#arrayMin">arrayMin</a></li><li><a href="global.html#arraySum">arraySum</a></li><li><a href="global.html#dailyStats">dailyStats</a></li><li><a href="global.html#diurnalStats">diurnalStats</a></li><li><a href="global.html#pm_nowcast">pm_nowcast</a></li><li><a href="global.html#roundAndUseNull">roundAndUseNull</a></li><li><a href="global.html#trimDate">trimDate</a></li><li><a href="global.html#useNull">useNull</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#arrayCount">arrayCount</a></li><li><a href="global.html#arrayMax">arrayMax</a></li><li><a href="global.html#arrayMean">arrayMean</a></li><li><a href="global.html#arrayMin">arrayMin</a></li><li><a href="global.html#arraySum">arraySum</a></li><li><a href="global.html#dailyStats">dailyStats</a></li><li><a href="global.html#diurnalStats">diurnalStats</a></li><li><a href="global.html#pm_nowcast">pm_nowcast</a></li><li><a href="global.html#qcType">qcType</a></li><li><a href="global.html#roundAndUseNull">roundAndUseNull</a></li><li><a href="global.html#trimDate">trimDate</a></li><li><a href="global.html#useNull">useNull</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Tue Jun 02 2026 09:41:10 GMT-0700 (Pacific Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Tue Jun 16 2026 17:17:50 GMT-0700 (Pacific Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

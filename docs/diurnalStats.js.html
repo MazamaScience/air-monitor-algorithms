@@ -27,7 +27,7 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import { trimDate } from "./trimDate.js";
-import { roundAndUseNull, useNull } from "./utils.js";
+import { roundAndUseNull, qcType } from "./utils.js";
 
 /**
  * Calculate hourly (diurnal) statistics over recent days.
@@ -45,9 +45,19 @@ import { roundAndUseNull, useNull } from "./utils.js";
  * @param {Array.&lt;number>} x - Matching array of values (e.g. PM2.5).
  * @param {string} timezone - Olson timezone string (e.g. "America/Los_Angeles").
  * @param {number} dayCount - Number of days to include (default: 7).
+ * @param {string} qc - Negative-value QC mode passed to qcType: "keep"
+ *   (clamp small negatives to 0, drop values below -10) or "drop" (drop all
+ *   negatives). Default: "keep".
  * @returns {object} - Object with hour, count, min, mean, and max arrays.
+ * @example
+ * const result = diurnalStats(datetime, pm25, "America/Los_Angeles");
+ * // result.hour   — [0, 1, 2, ..., 23]
+ * // result.count  — [7, 7, 7, ..., 6]   (days contributing to each hour)
+ * // result.min    — [1.2, 0.8, ..., 3.1]
+ * // result.mean   — [4.5, 3.2, ..., 9.8]
+ * // result.max    — [12.0, 8.4, ..., 22.3]
  */
-export function diurnalStats(datetime, x, timezone, dayCount = 7) {
+export function diurnalStats(datetime, x, timezone, dayCount = 7, qc = "keep") {
   // Trim to full local days
   const trimmed = trimDate(datetime, x, timezone);
 
@@ -71,8 +81,10 @@ export function diurnalStats(datetime, x, timezone, dayCount = 7) {
   dayCount = fullDayCount &lt; dayCount ? fullDayCount : dayCount;
   const startIndex = trimmed.datetime.length - dayCount * 24;
 
-  // Clean data and mark valid values
-  const values = useNull(trimmed.x);
+  // Apply the negative-value QC pass and mark valid values. The qc mode
+  // controls how negatives are handled (see qcType); "keep" clamps small
+  // negatives to 0 and drops values below -10 as missing.
+  const values = qcType(trimmed.x, qc);
   const validFlags = values.map((v) => (v === null ? 0 : 1));
 
   const hour = [];
@@ -84,7 +96,7 @@ export function diurnalStats(datetime, x, timezone, dayCount = 7) {
   // For each hour of the day (0–23), compute stats across days
   for (let h = 0; h &lt; 24; h++) {
     let min = Number.MAX_VALUE;
-    let max = Number.MIN_VALUE;
+    let max = -Infinity;
     let count = 0;
     let sum = null;
 
@@ -92,18 +104,22 @@ export function diurnalStats(datetime, x, timezone, dayCount = 7) {
       const index = startIndex + h + d * 24;
 
       if (validFlags[index] === 1) {
+        // Values have already been QC'd by qcType above, so every valid value
+        // here is non-negative (or was dropped to null and skipped).
+        const value = values[index];
+
         if (sum === null) sum = 0;
 
-        min = values[index] &lt; min ? values[index] : min;
-        max = values[index] > max ? values[index] : max;
-        sum += values[index];
+        min = value &lt; min ? value : min;
+        max = value > max ? value : max;
+        sum += value;
         count += 1;
       }
     }
 
     hour[h] = h;
-    hourlyMin[h] = min === Number.MAX_VALUE ? null : min;
-    hourlyMax[h] = max === Number.MIN_VALUE ? null : max;
+    hourlyMin[h] = count === 0 ? null : min;
+    hourlyMax[h] = count === 0 ? null : max;
     hourlyCount[h] = count;
     hourlyMean[h] = sum === null ? null : sum / count;
   }
@@ -131,13 +147,13 @@ export function diurnalStats(datetime, x, timezone, dayCount = 7) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#arrayCount">arrayCount</a></li><li><a href="global.html#arrayMax">arrayMax</a></li><li><a href="global.html#arrayMean">arrayMean</a></li><li><a href="global.html#arrayMin">arrayMin</a></li><li><a href="global.html#arraySum">arraySum</a></li><li><a href="global.html#dailyStats">dailyStats</a></li><li><a href="global.html#diurnalStats">diurnalStats</a></li><li><a href="global.html#pm_nowcast">pm_nowcast</a></li><li><a href="global.html#roundAndUseNull">roundAndUseNull</a></li><li><a href="global.html#trimDate">trimDate</a></li><li><a href="global.html#useNull">useNull</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#arrayCount">arrayCount</a></li><li><a href="global.html#arrayMax">arrayMax</a></li><li><a href="global.html#arrayMean">arrayMean</a></li><li><a href="global.html#arrayMin">arrayMin</a></li><li><a href="global.html#arraySum">arraySum</a></li><li><a href="global.html#dailyStats">dailyStats</a></li><li><a href="global.html#diurnalStats">diurnalStats</a></li><li><a href="global.html#pm_nowcast">pm_nowcast</a></li><li><a href="global.html#qcType">qcType</a></li><li><a href="global.html#roundAndUseNull">roundAndUseNull</a></li><li><a href="global.html#trimDate">trimDate</a></li><li><a href="global.html#useNull">useNull</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Tue Jun 02 2026 09:41:10 GMT-0700 (Pacific Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Tue Jun 16 2026 17:17:50 GMT-0700 (Pacific Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

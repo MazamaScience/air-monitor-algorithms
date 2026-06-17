@@ -8,6 +8,9 @@
  * @param {Array<number>} x - The input array of values.
  * @param {number} digits - Number of decimal places to round to (default is 1).
  * @returns {Array<number|null>} - New array with rounded values or nulls.
+ * @example
+ * roundAndUseNull([1.234, null, NaN, 5.678])  // => [1.2, null, null, 5.7]
+ * roundAndUseNull([1.234, 5.678], 0)           // => [1, 6]
  */
 export function roundAndUseNull(x, digits = 1) {
   const factor = 10 ** digits;
@@ -29,6 +32,8 @@ export function roundAndUseNull(x, digits = 1) {
  *
  * @param {Array<*>} x - Input array with possibly invalid values.
  * @returns {Array<number|null>} - Cleaned array with only numbers or nulls.
+ * @example
+ * useNull([1, null, NaN, undefined, 5])  // => [1, null, null, null, 5]
  */
 export function useNull(x) {
   return x.map((value) => (Number.isFinite(value) ? value : null));
@@ -42,6 +47,9 @@ export function useNull(x) {
  *
  * @param {Array<*>} x - Input array.
  * @returns {number|null} - Minimum number or null if none found.
+ * @example
+ * arrayMin([5, null, 2, null, 8])  // => 2
+ * arrayMin([null, null])           // => null
  */
 export function arrayMin(x) {
   const valid = useNull(x).filter((v) => v !== null);
@@ -56,6 +64,9 @@ export function arrayMin(x) {
  *
  * @param {Array<*>} x - Input array.
  * @returns {number|null} - Maximum number or null if none found.
+ * @example
+ * arrayMax([5, null, 2, null, 8])  // => 8
+ * arrayMax([null, null])           // => null
  */
 export function arrayMax(x) {
   const valid = useNull(x).filter((v) => v !== null);
@@ -69,6 +80,9 @@ export function arrayMax(x) {
  *
  * @param {Array<*>} x - Input array.
  * @returns {number} - Count of numbers (excluding nulls and invalid values).
+ * @example
+ * arrayCount([5, null, 2, null, 8])  // => 3
+ * arrayCount([null, null])           // => 0
  */
 export function arrayCount(x) {
   return useNull(x).filter((v) => v !== null).length;
@@ -81,6 +95,9 @@ export function arrayCount(x) {
  *
  * @param {Array<*>} x - Input array.
  * @returns {number|null} - Sum of numbers or null if no valid values.
+ * @example
+ * arraySum([5, null, 2, null, 8])  // => 15
+ * arraySum([null, null])           // => null
  */
 export function arraySum(x) {
   const valid = useNull(x).filter((v) => v !== null);
@@ -95,6 +112,9 @@ export function arraySum(x) {
  *
  * @param {Array<*>} x - Input array.
  * @returns {number|null} - Mean of valid values or null.
+ * @example
+ * arrayMean([5, null, 2, null, 8])  // => 5
+ * arrayMean([null, null])           // => null
  */
 export function arrayMean(x) {
   const valid = useNull(x).filter((v) => v !== null);
@@ -124,6 +144,12 @@ export function arrayMean(x) {
  * @param {string} type - QC mode: "keep" or "drop".
  * @returns {Array<number|null>} - New array with QC applied.
  * @throws {Error} If `type` is not "keep" or "drop".
+ * @example
+ * // "keep": clamp small negatives to 0, drop values below -10
+ * qcType([5, -2, -15, null], "keep")  // => [5, 0, null, null]
+ *
+ * // "drop": remove all negatives
+ * qcType([5, -2, -15, null], "drop")  // => [5, null, null, null]
  */
 export function qcType(x, type) {
   if (type !== "keep" && type !== "drop") {

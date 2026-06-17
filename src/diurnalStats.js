@@ -21,6 +21,13 @@ import { roundAndUseNull, qcType } from "./utils.js";
  *   (clamp small negatives to 0, drop values below -10) or "drop" (drop all
  *   negatives). Default: "keep".
  * @returns {object} - Object with hour, count, min, mean, and max arrays.
+ * @example
+ * const result = diurnalStats(datetime, pm25, "America/Los_Angeles");
+ * // result.hour   — [0, 1, 2, ..., 23]
+ * // result.count  — [7, 7, 7, ..., 6]   (days contributing to each hour)
+ * // result.min    — [1.2, 0.8, ..., 3.1]
+ * // result.mean   — [4.5, 3.2, ..., 9.8]
+ * // result.max    — [12.0, 8.4, ..., 22.3]
  */
 export function diurnalStats(datetime, x, timezone, dayCount = 7, qc = "keep") {
   // Trim to full local days

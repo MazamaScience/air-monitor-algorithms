@@ -10,6 +10,11 @@ import { DateTime } from "luxon";
  * @param {Array.<number>} x - Array of measurements (same length as datetime).
  * @param {string} timezone - IANA/Olson timezone (e.g. "America/Los_Angeles").
  * @returns {object} - Object with `datetime` and `x` arrays trimmed to full days.
+ * @example
+ * // Series starting at 06:00 UTC (22:00 PST prior day) is trimmed to begin
+ * // at the first local midnight boundary.
+ * const { datetime, x } = trimDate(myDatetimes, myValues, "America/Los_Angeles");
+ * // datetime[0].hour === 8  (08:00 UTC = 00:00 PST)
  */
 export function trimDate(datetime, x, timezone) {
   if (!Array.isArray(datetime) || !Array.isArray(x) || datetime.length !== x.length) {

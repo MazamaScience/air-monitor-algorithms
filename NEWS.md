@@ -1,3 +1,14 @@
+# air-monitor-algorithms 1.3.1
+
+- Added `@example` JSDoc blocks to all public functions (`roundAndUseNull`,
+  `useNull`, `arrayMin`, `arrayMax`, `arrayCount`, `arraySum`, `arrayMean`,
+  `qcType`, `trimDate`, `dailyStats`, `diurnalStats`, `pm_nowcast`).
+- Improved Claude Code configuration: added `.claude/settings.json` with
+  permission allowlist and deny rules; renamed `.claude/prompts/` to
+  `.claude/commands/` for proper `/project:` slash-command support; added
+  `/project:wrap-up` end-of-session checklist command.
+- Removed stale `.claude/launch.json` and `CLAUDE_REVIEW.md`.
+
 # air-monitor-algorithms 1.3.0
 
 - Added `qcType(x, type)` utility to apply a negative-value quality-control

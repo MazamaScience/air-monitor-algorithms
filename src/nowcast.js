@@ -11,6 +11,11 @@ import { roundAndUseNull } from "./utils.js";
  *
  * @param {Array<number|null>} pm - Hourly PM2.5 or PM10 values (no gaps).
  * @returns {Array<number|null>} - Array of NowCast values, rounded to 1 decimal place.
+ * @example
+ * pm_nowcast([null, null, 10, 12, 15, 14, 11])
+ * // => [null, null, 10.0, 11.3, 12.8, 13.3, 12.1]
+ * // Early entries are null due to insufficient data (fewer than 2 valid
+ * // values in the most recent 3 hours, per EPA NowCast requirements).
  */
 export function pm_nowcast(pm) {
   // Validate input
