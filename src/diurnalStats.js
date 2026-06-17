@@ -1,5 +1,5 @@
 import { trimDate } from "./trimDate.js";
-import { roundAndUseNull, qcType } from "./utils.js";
+import { roundAndUseNull, QC_negativeValues } from "./utils.js";
 
 /**
  * Calculate hourly (diurnal) statistics over recent days.
@@ -54,9 +54,9 @@ export function diurnalStats(datetime, x, timezone, dayCount = 7, qc = "keep") {
   const startIndex = trimmed.datetime.length - dayCount * 24;
 
   // Apply the negative-value QC pass and mark valid values. The qc mode
-  // controls how negatives are handled (see qcType); "keep" clamps small
+  // controls how negatives are handled (see QC_negativeValues); "keep" clamps small
   // negatives to 0 and drops values below -10 as missing.
-  const values = qcType(trimmed.x, qc);
+  const values = QC_negativeValues(trimmed.x, qc);
   const validFlags = values.map((v) => (v === null ? 0 : 1));
 
   const hour = [];

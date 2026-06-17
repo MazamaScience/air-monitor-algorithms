@@ -104,6 +104,241 @@
     
 
     
+    <h4 class="name" id="QC_negativeValues"><span class="type-signature"></span>QC_negativeValues<span class="signature">(x, type)</span><span class="type-signature"> &rarr; {Array.&lt;(number|null)>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>QC_negativeValues</p>
+<p>Apply a quality-control pass for negative values to an array of measurements.
+Negative concentrations are not physically meaningful for the data this
+library handles, so they must be corrected or removed before computing
+statistics. How aggressively they are removed depends on the QC mode.</p>
+<p>Modes:</p>
+<ul>
+<li>&quot;keep&quot; -- Salvage near-zero readings. Small negatives in [-10, 0) are
+treated as instrument noise and clamped to 0; values below -10
+are considered unrecoverable and set to <code>null</code> (missing).</li>
+<li>&quot;drop&quot; -- Strict. Any negative value is set to <code>null</code> (missing).</li>
+</ul>
+<p>In both modes, non-numeric or missing values (NaN, undefined, null) become
+<code>null</code>, and non-negative values pass through unchanged.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>x</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;*></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Input array of values (e.g. PM2.5 concentrations).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>QC mode: &quot;keep&quot; or &quot;drop&quot;.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line154">line 154</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        <p>If <code>type</code> is not &quot;keep&quot; or &quot;drop&quot;.</p>
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>New array with QC applied.</li>
+</ul>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;(number|null)></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// "keep": clamp small negatives to 0, drop values below -10
+QC_negativeValues([5, -2, -15, null], "keep")  // => [5, 0, null, null]
+
+// "drop": remove all negatives
+QC_negativeValues([5, -2, -15, null], "drop")  // => [5, null, null, null]</code></pre>
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="arrayCount"><span class="type-signature"></span>arrayCount<span class="signature">(x)</span><span class="type-signature"> &rarr; {number}</span></h4>
     
 
@@ -1656,241 +1891,6 @@ may contain <code>null</code> due to insufficient data.</p>
     
 
     
-    <h4 class="name" id="qcType"><span class="type-signature"></span>qcType<span class="signature">(x, type)</span><span class="type-signature"> &rarr; {Array.&lt;(number|null)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>qcType</p>
-<p>Apply a quality-control pass for negative values to an array of measurements.
-Negative concentrations are not physically meaningful for the data this
-library handles, so they must be corrected or removed before computing
-statistics. How aggressively they are removed depends on the QC mode.</p>
-<p>Modes:</p>
-<ul>
-<li>&quot;keep&quot; -- Salvage near-zero readings. Small negatives in [-10, 0) are
-treated as instrument noise and clamped to 0; values below -10
-are considered unrecoverable and set to <code>null</code> (missing).</li>
-<li>&quot;drop&quot; -- Strict. Any negative value is set to <code>null</code> (missing).</li>
-</ul>
-<p>In both modes, non-numeric or missing values (NaN, undefined, null) become
-<code>null</code>, and non-negative values pass through unchanged.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>x</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;*></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Input array of values (e.g. PM2.5 concentrations).</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>type</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>QC mode: &quot;keep&quot; or &quot;drop&quot;.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line154">line 154</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Throws:</h5>
-
-        
-
-<dl>
-    <dt>
-        <div class="param-desc">
-        <p>If <code>type</code> is not &quot;keep&quot; or &quot;drop&quot;.</p>
-        </div>
-    </dt>
-    <dd></dd>
-    <dt>
-        <dl>
-            <dt>
-                Type
-            </dt>
-            <dd>
-                
-<span class="param-type">Error</span>
-
-
-            </dd>
-        </dl>
-    </dt>
-    <dd></dd>
-</dl>
-
-
-    
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <ul>
-<li>New array with QC applied.</li>
-</ul>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Array.&lt;(number|null)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>// "keep": clamp small negatives to 0, drop values below -10
-qcType([5, -2, -15, null], "keep")  // => [5, 0, null, null]
-
-// "drop": remove all negatives
-qcType([5, -2, -15, null], "drop")  // => [5, null, null, null]</code></pre>
-
-
-
-        
-            
-
-    
-
-    
     <h4 class="name" id="roundAndUseNull"><span class="type-signature"></span>roundAndUseNull<span class="signature">(x, digits)</span><span class="type-signature"> &rarr; {Array.&lt;(number|null)>}</span></h4>
     
 
@@ -2479,13 +2479,13 @@ are replaced by <code>null</code>.</p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#arrayCount">arrayCount</a></li><li><a href="global.html#arrayMax">arrayMax</a></li><li><a href="global.html#arrayMean">arrayMean</a></li><li><a href="global.html#arrayMin">arrayMin</a></li><li><a href="global.html#arraySum">arraySum</a></li><li><a href="global.html#dailyStats">dailyStats</a></li><li><a href="global.html#diurnalStats">diurnalStats</a></li><li><a href="global.html#pm_nowcast">pm_nowcast</a></li><li><a href="global.html#qcType">qcType</a></li><li><a href="global.html#roundAndUseNull">roundAndUseNull</a></li><li><a href="global.html#trimDate">trimDate</a></li><li><a href="global.html#useNull">useNull</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#QC_negativeValues">QC_negativeValues</a></li><li><a href="global.html#arrayCount">arrayCount</a></li><li><a href="global.html#arrayMax">arrayMax</a></li><li><a href="global.html#arrayMean">arrayMean</a></li><li><a href="global.html#arrayMin">arrayMin</a></li><li><a href="global.html#arraySum">arraySum</a></li><li><a href="global.html#dailyStats">dailyStats</a></li><li><a href="global.html#diurnalStats">diurnalStats</a></li><li><a href="global.html#pm_nowcast">pm_nowcast</a></li><li><a href="global.html#roundAndUseNull">roundAndUseNull</a></li><li><a href="global.html#trimDate">trimDate</a></li><li><a href="global.html#useNull">useNull</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Tue Jun 16 2026 17:17:50 GMT-0700 (Pacific Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Tue Jun 16 2026 18:09:04 GMT-0700 (Pacific Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

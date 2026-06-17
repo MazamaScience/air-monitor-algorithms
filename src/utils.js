@@ -124,7 +124,7 @@ export function arrayMean(x) {
 
 
 /**
- * qcType
+ * QC_negativeValues
  *
  * Apply a quality-control pass for negative values to an array of measurements.
  * Negative concentrations are not physically meaningful for the data this
@@ -146,12 +146,12 @@ export function arrayMean(x) {
  * @throws {Error} If `type` is not "keep" or "drop".
  * @example
  * // "keep": clamp small negatives to 0, drop values below -10
- * qcType([5, -2, -15, null], "keep")  // => [5, 0, null, null]
+ * QC_negativeValues([5, -2, -15, null], "keep")  // => [5, 0, null, null]
  *
  * // "drop": remove all negatives
- * qcType([5, -2, -15, null], "drop")  // => [5, null, null, null]
+ * QC_negativeValues([5, -2, -15, null], "drop")  // => [5, null, null, null]
  */
-export function qcType(x, type) {
+export function QC_negativeValues(x, type) {
   if (type !== "keep" && type !== "drop") {
     throw new Error(
       `qcType: invalid type "${type}"; expected "keep" or "drop".`

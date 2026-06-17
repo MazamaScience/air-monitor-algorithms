@@ -94,7 +94,7 @@ All source lives in `src/`. Each module is small and single-purpose:
 | Module              | Exports                                   | Role |
 |---------------------|-------------------------------------------|------|
 | `src/index.js`      | (re-exports everything)                   | Public API surface; the only entry Rollup bundles. |
-| `src/utils.js`      | `arrayMin/Max/Count/Sum/Mean`, `useNull`, `roundAndUseNull`, `qcType` | Array primitives; null-aware stats; negative-value QC. No dependencies. |
+| `src/utils.js`      | `arrayMin/Max/Count/Sum/Mean`, `useNull`, `roundAndUseNull`, `QC_negativeValues` | Array primitives; null-aware stats; negative-value QC. No dependencies. |
 | `src/trimDate.js`   | `trimDate`                                | Trims a series to full local calendar days. Only module that imports Luxon directly. |
 | `src/dailyStats.js` | `dailyStats`                              | Per-day min/mean/max/count. Builds on `trimDate` + `utils`. |
 | `src/diurnalStats.js`| `diurnalStats`                           | Hour-of-day averages over recent days. Builds on `trimDate` + `utils`. |
@@ -183,8 +183,8 @@ most significant API-shaping changes.
 | Fewer than 24 aligned hourly values                  | return empty result object| `dailyStats.js`, `diurnalStats.js` |
 | Fewer than 2 valid values in most recent 3 hours     | return `null` for that NowCast | `nowcast.js` |
 | Non-finite / missing numeric value                   | normalized to `null`      | `utils.js` (`useNull`) |
-| Negative value (per `qc` mode, default `"keep"`)     | clamped to `0` or `null`  | `utils.js` (`qcType`) |
-| Invalid `qc` type passed to `qcType`                 | `throw Error`             | `utils.js` (`qcType`) |
+| Negative value (per `qc` mode, default `"keep"`)     | clamped to `0` or `null`  | `utils.js` (`QC_negativeValues`) |
+| Invalid `qc` type passed to `QC_negativeValues`      | `throw Error`             | `utils.js` (`QC_negativeValues`) |
 
 There is no logging layer; this is a library, so errors propagate to the caller
 rather than being logged. Failures are surfaced loudly (thrown) or represented
@@ -227,11 +227,6 @@ explicitly as `null` — never silently swallowed.
   24 hours of data are dropped by `trimDate`, and daily stats are computed over
   fixed 24-value slices. A `TODO` in `dailyStats.js` notes the intent to support
   a configurable minimum valid count and partial days.
-- **`diurnalStats` `min`/`max` sentinels.** Per-hour min/max are seeded with
-  `Number.MAX_VALUE` / `Number.MIN_VALUE` and converted to `null` if no valid
-  values were seen. This works but is a sentinel pattern; the null-aware
-  `arrayMin`/`arrayMax` helpers could be used instead for consistency with
-  `dailyStats`.
 - **DST handling.** Day-boundary logic assumes 24 hours per local day. Days with
   23 or 25 hours (DST transitions) are not specially handled; this is acceptable
   for current use but worth noting before relying on it across DST boundaries.

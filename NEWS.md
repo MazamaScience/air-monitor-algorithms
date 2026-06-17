@@ -1,3 +1,16 @@
+# air-monitor-algorithms 1.4.0
+
+- **Breaking:** Renamed the `qcType(x, type)` utility to
+  `QC_negativeValues(x, type)`. The signature and behavior are unchanged; only
+  the name is different, chosen to describe the action (quality-control of
+  negative values) rather than a generic noun. Consumers importing `qcType`
+  must update to `QC_negativeValues`.
+- Removed the unused Babel toolchain (`.babelrc` and the `@babel/cli`,
+  `@babel/core`, `@babel/preset-env` devDependencies). The Rollup build does
+  not use Babel, so this has no effect on the published bundles.
+- Renamed the `examples/test.html` demo to `examples/visual.html` and corrected
+  the `examples/basic.html` title to "Basic Example" to match its content.
+
 # air-monitor-algorithms 1.3.1
 
 - Added `@example` JSDoc blocks to all public functions (`roundAndUseNull`,

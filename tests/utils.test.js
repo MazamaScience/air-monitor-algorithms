@@ -9,7 +9,7 @@ import {
   arrayMean,
   roundAndUseNull,
   useNull,
-  qcType,
+  QC_negativeValues,
 } from "../src/index.js";
 
 test("roundAndUseNull works properly", () => {
@@ -91,33 +91,33 @@ test("useNull preserves already-valid numbers", () => {
   assert.equal(useNull(x), x);
 });
 
-test("qcType 'keep' clamps small negatives and drops very negative values", () => {
+test("QC_negativeValues 'keep' clamps small negatives and drops very negative values", () => {
   //          >=0           [-10,0) -> 0      < -10 -> null
   let x = [5, 0, -0.1, -10, -10.0001, -50, NaN, undefined, null];
   let expected = [5, 0, 0, 0, null, null, null, null, null];
-  assert.equal(qcType(x, "keep"), expected);
+  assert.equal(QC_negativeValues(x, "keep"), expected);
 });
 
-test("qcType 'drop' sets all negatives to null", () => {
+test("QC_negativeValues 'drop' sets all negatives to null", () => {
   let x = [5, 0, -0.1, -10, -10.0001, -50, NaN, undefined, null];
   let expected = [5, 0, null, null, null, null, null, null, null];
-  assert.equal(qcType(x, "drop"), expected);
+  assert.equal(QC_negativeValues(x, "drop"), expected);
 });
 
-test("qcType does not mutate the input array", () => {
+test("QC_negativeValues does not mutate the input array", () => {
   let x = [-0.1, -50];
-  qcType(x, "keep");
+  QC_negativeValues(x, "keep");
   assert.equal(x, [-0.1, -50]);
 });
 
-test("qcType throws on an invalid type", () => {
-  assert.throws(() => qcType([1, 2, 3], "bogus"));
-  assert.throws(() => qcType([1, 2, 3]));
+test("QC_negativeValues throws on an invalid type", () => {
+  assert.throws(() => QC_negativeValues([1, 2, 3], "bogus"));
+  assert.throws(() => QC_negativeValues([1, 2, 3]));
 });
 
-test("qcType handles empty arrays", () => {
-  assert.equal(qcType([], "keep"), []);
-  assert.equal(qcType([], "drop"), []);
+test("QC_negativeValues handles empty arrays", () => {
+  assert.equal(QC_negativeValues([], "keep"), []);
+  assert.equal(QC_negativeValues([], "drop"), []);
 });
 
 test.run();

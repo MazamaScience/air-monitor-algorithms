@@ -1,5 +1,5 @@
 /**
- * air-monitor-algorithms v1.3.0
+ * air-monitor-algorithms
  *
  * Scientific algorithms for analyzing hourly environmental sensor data,
  * especially air quality measurements.
@@ -39,5 +39,5 @@ export {
   arrayMean,
   roundAndUseNull,
   useNull,
-  qcType,
+  QC_negativeValues,
 } from "./utils.js";

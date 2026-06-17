@@ -5,7 +5,7 @@ import {
   arrayMean,
   arrayMax,
   roundAndUseNull,
-  qcType,
+  QC_negativeValues,
 } from "./utils.js";
 
 /**
@@ -57,8 +57,8 @@ export function dailyStats(datetime, x, timezone, qc = "keep") {
   const dayCount = trimmed.datetime.length / 24;
 
   // Apply the negative-value QC pass before computing daily statistics. The qc
-  // mode controls how negatives are handled (see qcType).
-  const qcValues = qcType(trimmed.x, qc);
+  // mode controls how negatives are handled (see QC_negativeValues).
+  const qcValues = QC_negativeValues(trimmed.x, qc);
 
   const dailyDatetime = [];
   const dailyCount = [];
