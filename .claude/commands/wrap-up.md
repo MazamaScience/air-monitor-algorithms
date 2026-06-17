@@ -1,3 +1,8 @@
+---
+description: End-of-session checklist — run tests, build, docs, and summarize git status. Run before pushing to GitHub or publishing to npm.
+allowed-tools: Read, Bash
+---
+
 Please run the end-of-session checklist for this project:
 
 1. Run `npm test` and confirm all tests pass. If any fail, report them and stop.

@@ -108,10 +108,10 @@ index.js ──exports──▶ all public functions
 trimDate.js ──imports──▶ luxon (DateTime)
 
 dailyStats.js   ──┬─▶ trimDate.js
-                  └─▶ utils.js (arrayCount/Min/Mean/Max, roundAndUseNull, qcType)
+                  └─▶ utils.js (arrayCount/Min/Mean/Max, roundAndUseNull, QC_negativeValues)
 
 diurnalStats.js ──┬─▶ trimDate.js
-                  └─▶ utils.js (roundAndUseNull, qcType)
+                  └─▶ utils.js (roundAndUseNull, QC_negativeValues)
 
 nowcast.js ───────────▶ utils.js (roundAndUseNull)
 ```
@@ -199,7 +199,6 @@ explicitly as `null` — never silently swallowed.
   - `dist/air-monitor-algorithms.esm.js` — ES module (for modern bundlers/Node).
 - **Command:** `npm run build`.
 - `dist/` is a **build artifact directory** — do not hand-edit it. Regenerate it.
-- Babel (`.babelrc`, `@babel/preset-env`) is present for transpilation tooling.
 - `package.json` version is the single source of truth for the published version.
 
 ### Testing
@@ -218,8 +217,8 @@ explicitly as `null` — never silently swallowed.
 - **JSDoc** generates HTML docs into `docs/` via `npm run docs`
   (config in `jsdoc.conf.json`; `README.md` is used as the docs landing page).
 - Public functions carry JSDoc with `@param`/`@returns` and unit descriptions.
-- Developer workflow hints live in `README_dev.md`; a runnable browser demo is
-  in `examples/basic.html`.
+- Developer workflow hints live in the "Development & Deployment" section of
+  `README.md`; a runnable browser demo is in `examples/basic.html`.
 
 ### Known Limitations and Future Work
 

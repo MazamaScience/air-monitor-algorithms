@@ -17,7 +17,7 @@ import { roundAndUseNull, QC_negativeValues } from "./utils.js";
  * @param {Array.<number>} x - Matching array of values (e.g. PM2.5).
  * @param {string} timezone - Olson timezone string (e.g. "America/Los_Angeles").
  * @param {number} dayCount - Number of days to include (default: 7).
- * @param {string} qc - Negative-value QC mode passed to qcType: "keep"
+ * @param {string} qc - Negative-value QC mode passed to QC_negativeValues: "keep"
  *   (clamp small negatives to 0, drop values below -10) or "drop" (drop all
  *   negatives). Default: "keep".
  * @returns {object} - Object with hour, count, min, mean, and max arrays.
@@ -76,7 +76,7 @@ export function diurnalStats(datetime, x, timezone, dayCount = 7, qc = "keep") {
       const index = startIndex + h + d * 24;
 
       if (validFlags[index] === 1) {
-        // Values have already been QC'd by qcType above, so every valid value
+        // Values have already been QC'd by QC_negativeValues above, so every valid value
         // here is non-negative (or was dropped to null and skipped).
         const value = values[index];
 

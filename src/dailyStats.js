@@ -21,7 +21,7 @@ import {
  * @param {Array.<DateTime>} datetime - Hourly UTC timestamps as Luxon DateTime objects.
  * @param {Array.<number>} x - Array of hourly values.
  * @param {string} timezone - Olson time zone (e.g. "America/Los_Angeles").
- * @param {string} qc - Negative-value QC mode passed to qcType: "keep"
+ * @param {string} qc - Negative-value QC mode passed to QC_negativeValues: "keep"
  *   (clamp small negatives to 0, drop values below -10) or "drop" (drop all
  *   negatives). Default: "keep".
  * @returns {object} - Object with datetime, count, min, mean, and max arrays.

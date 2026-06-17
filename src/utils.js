@@ -154,7 +154,7 @@ export function arrayMean(x) {
 export function QC_negativeValues(x, type) {
   if (type !== "keep" && type !== "drop") {
     throw new Error(
-      `qcType: invalid type "${type}"; expected "keep" or "drop".`
+      `QC_negativeValues: invalid type "${type}"; expected "keep" or "drop".`
     );
   }
 

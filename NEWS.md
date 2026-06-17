@@ -1,34 +1,24 @@
 # air-monitor-algorithms 1.4.0
 
-- **Breaking:** Renamed the `qcType(x, type)` utility to
-  `QC_negativeValues(x, type)`. The signature and behavior are unchanged; only
-  the name is different, chosen to describe the action (quality-control of
-  negative values) rather than a generic noun. Consumers importing `qcType`
-  must update to `QC_negativeValues`.
-- Removed the unused Babel toolchain (`.babelrc` and the `@babel/cli`,
-  `@babel/core`, `@babel/preset-env` devDependencies). The Rollup build does
-  not use Babel, so this has no effect on the published bundles.
-- Renamed the `examples/test.html` demo to `examples/visual.html` and corrected
-  the `examples/basic.html` title to "Basic Example" to match its content.
+- **Breaking:** Renamed `qcType()` to `QC_negativeValues()` (signature and
+  behavior unchanged).
+- Removed the unused Babel toolchain (no effect on the published bundles).
+- Renamed `examples/test.html` to `examples/visual.html`; fixed the
+  `examples/basic.html` title.
 
 # air-monitor-algorithms 1.3.1
 
-- Added `@example` JSDoc blocks to all public functions (`roundAndUseNull`,
-  `useNull`, `arrayMin`, `arrayMax`, `arrayCount`, `arraySum`, `arrayMean`,
-  `qcType`, `trimDate`, `dailyStats`, `diurnalStats`, `pm_nowcast`).
-- Improved Claude Code configuration: added `.claude/settings.json` with
-  permission allowlist and deny rules; renamed `.claude/prompts/` to
-  `.claude/commands/` for proper `/project:` slash-command support; added
-  `/project:wrap-up` end-of-session checklist command.
+- Added `@example` JSDoc blocks to all public functions.
+- Improved Claude Code configuration (`.claude/settings.json` permissions,
+  `.claude/commands/` slash commands, `wrap-up` checklist).
 - Removed stale `.claude/launch.json` and `CLAUDE_REVIEW.md`.
 
 # air-monitor-algorithms 1.3.0
 
-- Added `qcType(x, type)` utility to apply a negative-value quality-control
-  pass. Mode `"keep"` clamps small negatives in `[-10, 0)` to `0` and drops
-  values below `-10` to `null`; mode `"drop"` sets all negatives to `null`.
-- `dailyStats` and `diurnalStats` now accept an optional `qc` argument
-  (default `"keep"`) and apply this QC pass before computing statistics.
+- Added `qcType(x, type)` negative-value QC utility (modes `"keep"` and
+  `"drop"`).
+- `dailyStats` and `diurnalStats` accept an optional `qc` argument
+  (default `"keep"`) applied before computing statistics.
 
 # air-monitor-algorithms 1.2.7
 
