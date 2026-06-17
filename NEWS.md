@@ -1,3 +1,14 @@
+# air-monitor-algorithms 1.4.1
+
+- Reorganized documentation: split `CLAUDE.md` into project-specific guide,
+  portable `.claude/CLAUDE_STYLE_GUIDE.md`, and moved architecture notes into
+  `.claude/CLAUDE_ARCHITECTURE.md`.
+- Merged `README_dev.md` into `README.md`; added Examples section.
+- Consolidated `.claude/commands/` from 7 files to 4 (`initial-project-review`,
+  `code-review`, `documentation-review`, `wrap-up`); added `pre-publish`.
+- Fixed stale `qcType` references in JSDoc comments and error messages
+  (renamed to `QC_negativeValues` in 1.4.0 but not fully updated in source).
+
 # air-monitor-algorithms 1.4.0
 
 - **Breaking:** Renamed `qcType()` to `QC_negativeValues()` (signature and
