@@ -5,7 +5,7 @@
  * number of decimal places. Any value that is not a valid number (NaN, undefined, null)
  * will be converted to `null`.
  *
- * @param {Array<number>} x - The input array of values.
+ * @param {Array<*>} x - The input array of values.
  * @param {number} digits - Number of decimal places to round to (default is 1).
  * @returns {Array<number|null>} - New array with rounded values or nulls.
  * @example

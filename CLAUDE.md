@@ -25,7 +25,8 @@ Features:
 
 - Distributed as an ES module (also bundled as UMD for `require('...')`).
 - High-level analysis functions: `dailyStats`, `diurnalStats`, `pm_nowcast`, `trimDate`.
-- Array utility functions: `arrayCount`, `arraySum`, `arrayMin`, `arrayMean`, `arrayMax`.
+- Array utility functions: `arrayCount`, `arraySum`, `arrayMin`, `arrayMean`, `arrayMax`,
+  `useNull`, `roundAndUseNull`.
 - Quality-control utility: `QC_negativeValues`.
 - Published to npm and consumed by the
   [air-monitor](https://github.com/MazamaScience/air-monitor) ecosystem.

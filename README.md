@@ -37,7 +37,7 @@ statistics are computed (see `QC_negativeValues` below).
 
 Array utility functions:
 
-- `arrayCount(x)` — Count of non-missing (`!= null`) values
+- `arrayCount(x)` — Count of valid numeric values (non-null, non-NaN)
 - `arraySum(x)` — Sum of valid values
 - `arrayMin(x)` — Minimum valid value
 - `arrayMean(x)` — Mean of valid values
@@ -117,7 +117,7 @@ package.
 ### Test
 
 ```
-npm run test
+npm test
 ```
 
 Tests use [uvu](https://github.com/lukeed/uvu) and live in `tests/`, one file

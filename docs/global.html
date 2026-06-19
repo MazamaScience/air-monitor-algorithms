@@ -1205,7 +1205,7 @@ arraySum([null, null])           // => null</code></pre>
     <p>Calculate daily statistics over a time series of hourly values.</p>
 <p>Returns five arrays of daily values:</p>
 <ul>
-<li>datetime -- Luxon DateTime marking the start of each day (local time)</li>
+<li>datetime -- Luxon DateTime in UTC marking the start of each local day</li>
 <li>count    -- Number of valid hourly values each day</li>
 <li>min      -- Minimum value each day</li>
 <li>mean     -- Mean value each day</li>
@@ -1275,7 +1275,7 @@ arraySum([null, null])           // => null</code></pre>
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;number></span>
+<span class="param-type">Array.&lt;(number|null)></span>
 
 
             
@@ -1526,7 +1526,7 @@ negatives). Default: &quot;keep&quot;.</p></td>
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;number></span>
+<span class="param-type">Array.&lt;(number|null)></span>
 
 
             
@@ -1582,7 +1582,8 @@ negatives). Default: &quot;keep&quot;.</p></td>
 
             
 
-            <td class="description last"><p>Number of days to include (default: 7).</p></td>
+            <td class="description last"><p>Number of recent full days to include (default: 7).
+If fewer full days are available, all available days are used.</p></td>
         </tr>
 
     
@@ -1648,7 +1649,7 @@ negatives). Default: &quot;keep&quot;.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="diurnalStats.js.html">diurnalStats.js</a>, <a href="diurnalStats.js.html#line32">line 32</a>
+        <a href="diurnalStats.js.html">diurnalStats.js</a>, <a href="diurnalStats.js.html#line40">line 40</a>
     </li></ul></dd>
     
 
@@ -1823,7 +1824,7 @@ may contain <code>null</code> due to insufficient data.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="nowcast.js.html">nowcast.js</a>, <a href="nowcast.js.html#line20">line 20</a>
+        <a href="nowcast.js.html">nowcast.js</a>, <a href="nowcast.js.html#line21">line 21</a>
     </li></ul></dd>
     
 
@@ -1879,9 +1880,10 @@ may contain <code>null</code> due to insufficient data.</p>
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>pm_nowcast([null, null, 10, 12, 15, 14, 11])
-// => [null, null, 10.0, 11.3, 12.8, 13.3, 12.1]
-// Early entries are null due to insufficient data (fewer than 2 valid
-// values in the most recent 3 hours, per EPA NowCast requirements).</code></pre>
+// => [null, null, null, 11.1, 13.0, 13.4, 12.5]
+// The first three entries are null: EPA NowCast requires at least 2 valid
+// values in the most recent 3 hours. Index 2 has only 1 (the value 10),
+// so it does not qualify. Index 3 is the first with 2 valid recent values.</code></pre>
 
 
 
@@ -1944,7 +1946,7 @@ will be converted to <code>null</code>.</p>
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;number></span>
+<span class="param-type">Array.&lt;*></span>
 
 
             
@@ -2084,7 +2086,7 @@ roundAndUseNull([1.234, 5.678], 0)           // => [1, 6]</code></pre>
     
 
     
-    <h4 class="name" id="trimDate"><span class="type-signature"></span>trimDate<span class="signature">(datetime, x, timezone)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    <h4 class="name" id="trimDate"><span class="type-signature"></span>trimDate<span class="signature">(datetime, x, timezone)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -2233,7 +2235,7 @@ time zone to determine day boundaries, but always returns timestamps in UTC.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="trimDate.js.html">trimDate.js</a>, <a href="trimDate.js.html#line19">line 19</a>
+        <a href="trimDate.js.html">trimDate.js</a>, <a href="trimDate.js.html#line24">line 24</a>
     </li></ul></dd>
     
 
@@ -2256,6 +2258,89 @@ time zone to determine day boundaries, but always returns timestamps in UTC.</p>
 
 
 
+<h5>Throws:</h5>
+<ul>
+        <li>
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        <p>If <code>datetime</code> and <code>x</code> are not arrays of equal length.</p>
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+</li>
+    
+        <li>
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        <p>If <code>timezone</code> is not a string or is not a recognized IANA zone.</p>
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+</li>
+    
+        <li>
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        <p>If any entry in <code>datetime</code> is not a Luxon DateTime in UTC.</p>
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+</li>
+    </ul>
 
 
 <h5>Returns:</h5>
@@ -2263,7 +2348,9 @@ time zone to determine day boundaries, but always returns timestamps in UTC.</p>
         
 <div class="param-desc">
     <ul>
-<li>Object with <code>datetime</code> and <code>x</code> arrays trimmed to full days.</li>
+<li>Arrays trimmed
+to full local calendar days. Timestamps remain in UTC. Both arrays are empty
+if the input contains fewer than one full local day.</li>
 </ul>
 </div>
 
@@ -2275,7 +2362,7 @@ time zone to determine day boundaries, but always returns timestamps in UTC.</p>
     </dt>
     <dd>
         
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
 
 
     </dd>
@@ -2288,10 +2375,10 @@ time zone to determine day boundaries, but always returns timestamps in UTC.</p>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>// Series starting at 06:00 UTC (22:00 PST prior day) is trimmed to begin
-// at the first local midnight boundary.
+    <pre class="prettyprint"><code>// Series starting at 06:00 UTC (22:00 UTC-8 on the prior day) is trimmed to
+// begin at the first local midnight boundary.
 const { datetime, x } = trimDate(myDatetimes, myValues, "America/Los_Angeles");
-// datetime[0].hour === 8  (08:00 UTC = 00:00 PST)</code></pre>
+// datetime[0].hour === 8  (08:00 UTC = 00:00 UTC-8)</code></pre>
 
 
 
@@ -2485,7 +2572,7 @@ are replaced by <code>null</code>.</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Wed Jun 17 2026 11:49:27 GMT-0700 (Pacific Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Fri Jun 19 2026 14:47:49 GMT-0700 (Pacific Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

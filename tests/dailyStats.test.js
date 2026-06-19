@@ -121,4 +121,8 @@ test("dailyStats computes mean correctly with missing values", () => {
   assert.is(result.mean[0], 12.9);
 });
 
+test("throws on invalid qc parameter", () => {
+  assert.throws(() => dailyStats(datetime, x, "UTC", "bogus"));
+});
+
 test.run();

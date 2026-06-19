@@ -30,10 +30,21 @@ test("nowcast returns average for flat data", () => {
   assert.ok(nowcast[11] === 20);
 });
 
+test("nowcast returns 0 for all-zero data", () => {
+  const pm25 = Array(12).fill(0);
+  const nowcast = pm_nowcast(pm25);
+  assert.is(nowcast[11], 0);
+});
+
 test("nowcast values are rounded to one decimal place", () => {
   let pm25 = Array(12).fill(20.12345);
   let nowcast = pm_nowcast(pm25);
   assert.match(nowcast[11].toFixed(1), /^20\.1$/);
+});
+
+test("throws if input is not an array", () => {
+  assert.throws(() => pm_nowcast(42));
+  assert.throws(() => pm_nowcast(null));
 });
 
 test.run();

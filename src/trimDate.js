@@ -9,12 +9,17 @@ import { DateTime } from "luxon";
  * @param {Array.<DateTime>} datetime - Array of Luxon DateTime objects (in UTC).
  * @param {Array.<number>} x - Array of measurements (same length as datetime).
  * @param {string} timezone - IANA/Olson timezone (e.g. "America/Los_Angeles").
- * @returns {object} - Object with `datetime` and `x` arrays trimmed to full days.
+ * @returns {{ datetime: Array.<DateTime>, x: Array.<number|null> }} - Arrays trimmed
+ *   to full local calendar days. Timestamps remain in UTC. Both arrays are empty
+ *   if the input contains fewer than one full local day.
+ * @throws {Error} If `datetime` and `x` are not arrays of equal length.
+ * @throws {Error} If `timezone` is not a string or is not a recognized IANA zone.
+ * @throws {Error} If any entry in `datetime` is not a Luxon DateTime in UTC.
  * @example
- * // Series starting at 06:00 UTC (22:00 PST prior day) is trimmed to begin
- * // at the first local midnight boundary.
+ * // Series starting at 06:00 UTC (22:00 UTC-8 on the prior day) is trimmed to
+ * // begin at the first local midnight boundary.
  * const { datetime, x } = trimDate(myDatetimes, myValues, "America/Los_Angeles");
- * // datetime[0].hour === 8  (08:00 UTC = 00:00 PST)
+ * // datetime[0].hour === 8  (08:00 UTC = 00:00 UTC-8)
  */
 export function trimDate(datetime, x, timezone) {
   if (!Array.isArray(datetime) || !Array.isArray(x) || datetime.length !== x.length) {
@@ -31,6 +36,13 @@ export function trimDate(datetime, x, timezone) {
     if (dt.zoneName !== "UTC") {
       throw new Error("All datetime values must be in the UTC time zone.");
     }
+  }
+
+  // Validate the timezone string by attempting a conversion and checking isValid.
+  // Luxon's setZone() silently falls back to UTC for unrecognized zone names, so
+  // we must check explicitly rather than relying on a thrown exception.
+  if (datetime.length > 0 && !datetime[0].setZone(timezone).isValid) {
+    throw new Error(`trimDate: invalid or unrecognized timezone "${timezone}".`);
   }
 
   // Convert to local hours

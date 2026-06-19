@@ -12,14 +12,14 @@ import {
  * Calculate daily statistics over a time series of hourly values.
  *
  * Returns five arrays of daily values:
- * * datetime -- Luxon DateTime marking the start of each day (local time)
+ * * datetime -- Luxon DateTime in UTC marking the start of each local day
  * * count    -- Number of valid hourly values each day
  * * min      -- Minimum value each day
  * * mean     -- Mean value each day
  * * max      -- Maximum value each day
  *
  * @param {Array.<DateTime>} datetime - Hourly UTC timestamps as Luxon DateTime objects.
- * @param {Array.<number>} x - Array of hourly values.
+ * @param {Array.<number|null>} x - Array of hourly values.
  * @param {string} timezone - Olson time zone (e.g. "America/Los_Angeles").
  * @param {string} qc - Negative-value QC mode passed to QC_negativeValues: "keep"
  *   (clamp small negatives to 0, drop values below -10) or "drop" (drop all
@@ -39,7 +39,7 @@ export function dailyStats(datetime, x, timezone, qc = "keep") {
 
   // TODO: Add support for minCount valid values and partial days
 
-    // NOTE: Return empty result if fewer than 24 aligned values
+  // NOTE: Return empty result if fewer than 24 aligned values
   if (
     !Array.isArray(trimmed.datetime) ||
     trimmed.datetime.length < 24 ||

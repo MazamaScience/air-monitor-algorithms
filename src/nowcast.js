@@ -13,9 +13,10 @@ import { roundAndUseNull } from "./utils.js";
  * @returns {Array<number|null>} - Array of NowCast values, rounded to 1 decimal place.
  * @example
  * pm_nowcast([null, null, 10, 12, 15, 14, 11])
- * // => [null, null, 10.0, 11.3, 12.8, 13.3, 12.1]
- * // Early entries are null due to insufficient data (fewer than 2 valid
- * // values in the most recent 3 hours, per EPA NowCast requirements).
+ * // => [null, null, null, 11.1, 13.0, 13.4, 12.5]
+ * // The first three entries are null: EPA NowCast requires at least 2 valid
+ * // values in the most recent 3 hours. Index 2 has only 1 (the value 10),
+ * // so it does not qualify. Index 3 is the first with 2 valid recent values.
  */
 export function pm_nowcast(pm) {
   // Validate input
@@ -46,7 +47,7 @@ export function pm_nowcast(pm) {
  *
  * @private
  * @param {Array<number|null>} x - Up to 12 hourly values in chronological order.
- * @returns {number|null} - Single NowCast value, or null if data is insufficient.
+ * @returns {number|null} - Raw NowCast value (unrounded), or null if data is insufficient.
  */
 function nowcastPM(x) {
   // Allow single number input
@@ -76,6 +77,10 @@ function nowcastPM(x) {
   const max = validValues.reduce((a, o) => (o > a ? o : a));
   const min = validValues.reduce((a, o) => (o < a ? o : a));
 
+  // When all values are identical (including all-zero), there is no variation,
+  // so the weight factor is 1 and the NowCast value is just the common value.
+  if (max === min) return max;
+
   // Compute "scaled rate of change" = (max - min) / max
   const scaledRateOfChange = (max - min) / max;
 
@@ -97,11 +102,5 @@ function nowcastPM(x) {
     .map((i) => Math.pow(weightFactor, i))
     .reduce((a, o) => a + o);
 
-  // Final NowCast value, rounded to 1 decimal place
-  let returnVal = parseFloat((weightedSum / weightFactorSum).toFixed(1));
-
-  // If the result is not a number, return null
-  returnVal = Number.isNaN(returnVal) ? null : returnVal;
-
-  return returnVal;
+  return weightedSum / weightFactorSum;
 }

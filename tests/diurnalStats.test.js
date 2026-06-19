@@ -167,4 +167,8 @@ test("'drop' QC mode sets all negatives to missing", () => {
   assert.equal(result.max, Array(24).fill(null));
 });
 
+test("throws on invalid qc parameter", () => {
+  assert.throws(() => diurnalStats(datetime, x, "UTC", 7, "bogus"));
+});
+
 test.run();

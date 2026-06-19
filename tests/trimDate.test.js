@@ -101,6 +101,11 @@ test("throws if datetime values are not in UTC", () => {
   assert.throws(() => trimDate(local, x, "UTC"), /UTC/);
 });
 
+test("throws on invalid or unrecognized timezone string", () => {
+  assert.throws(() => trimDate(datetime, x, "Not/ATimezone"), /timezone/);
+  assert.throws(() => trimDate(datetime, x, ""), /timezone/);
+});
+
 test("throws if any datetime value is not a Luxon DateTime", () => {
   const bad = [...datetime];
   bad[0] = new Date();
