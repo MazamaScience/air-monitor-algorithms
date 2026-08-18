@@ -2,8 +2,8 @@
 # Architecture Notes — air-monitor-algorithms
 
 This document is maintained as a reference for human maintainers and as context
-for AI assistants working on this codebase. Source code, JSDoc comments, and
-human-reviewed release notes (`NEWS.md`) remain authoritative.
+for AI assistants working on this codebase. Source code, inline comments, and
+human-reviewed release notes (`CHANGELOG.md`) remain authoritative.
 
 ---
 
@@ -29,7 +29,20 @@ objects out. It is distributed as an npm package and as browser-loadable bundles
 - It does not perform timezone-naive date math (Luxon `DateTime` in UTC is required).
 - It does not bundle a runtime framework — it is plain ESM with one dependency.
 
-### Relationship to Other AirFire / air-monitor Systems
+### Directory Structure
+
+| Path | Responsibility |
+|------|-----------------|
+| `src/` | Library source, one module per concern (see Module Map below). |
+| `tests/` | uvu test suite, one file per source module, plus `interactive_tests.js` for manual exploration. |
+| `dist/` | Rollup build output (UMD + ESM bundles). Generated — never hand-edit. |
+| `docs/` | JSDoc-generated HTML documentation. Generated — never hand-edit. |
+| `examples/` | Runnable browser demo (`basic.html`) exercising the UMD bundle. |
+| `.github/workflows/` | CI configuration (`test.yml` runs `npm test` on push/PR to `main`). |
+| `CHANGELOG.md` | Human-reviewed changelog; the record of intentional API changes. |
+| `README.md` | User-facing overview and docs landing page. |
+
+### Relationship to Other Systems
 
 This package is a building block in the
 [air-monitor](https://github.com/MazamaScience/air-monitor) ecosystem, which
@@ -55,19 +68,18 @@ The package is published to npm as `air-monitor-algorithms`.
 Entry points (from `package.json`):
 
 | Consumer            | Field / condition | File                                   |
-|---------------------|-------------------|----------------------------------------|
+|---------------------|-------------------|-----------------------------------------|
 | ESM `import`        | `module` / `import` | `dist/air-monitor-algorithms.esm.js` |
 | CommonJS `require`  | `main` / `require`  | `dist/air-monitor-algorithms.umd.js` |
 | Browser global      | UMD `name`          | `AirMonitorAlgorithms`               |
 
 ---
----
 
 ## FOR AI
 
 The sections below provide architectural context to help AI assistants understand
-how this codebase is structured, why it is designed the way it is, and how changes
-in one area may affect others.
+how this codebase is structured, why it is designed the way it is, and how
+changes in one area may affect others.
 
 ### Core Data Conventions
 
@@ -92,7 +104,7 @@ package as well as by downstream consumers. Treat them as load-bearing:
 All source lives in `src/`. Each module is small and single-purpose:
 
 | Module              | Exports                                   | Role |
-|---------------------|-------------------------------------------|------|
+|---------------------|---------------------------------------------|------|
 | `src/index.js`      | (re-exports everything)                   | Public API surface; the only entry Rollup bundles. |
 | `src/utils.js`      | `arrayMin/Max/Count/Sum/Mean`, `useNull`, `roundAndUseNull`, `QC_negativeValues` | Array primitives; null-aware stats; negative-value QC. No dependencies. |
 | `src/trimDate.js`   | `trimDate`                                | Trims a series to full local calendar days. Only module that imports Luxon directly. |
@@ -157,7 +169,7 @@ keep the explanatory comments.
 
 Because this is a published package consumed by other projects, the following are
 effectively a contract. Changing any of them is a breaking change warranting a
-deliberate version bump and a `NEWS.md` entry:
+deliberate version bump and a `CHANGELOG.md` entry:
 
 - Exported function **names and parameter signatures**.
 - The **return shapes** of `dailyStats` (`{ datetime, count, min, mean, max }`)
@@ -168,13 +180,14 @@ deliberate version bump and a `NEWS.md` entry:
 Historical note: in 1.0.3 the older `dailyAverage()` / `diurnalAverage()`
 functions were replaced by the object-returning `dailyStats()` / `diurnalStats()`,
 and in 1.2.0 all timestamps were standardized on Luxon UTC `DateTime`. The
-moment-timezone → Luxon migration happened at the same time. These were the two
-most significant API-shaping changes.
+moment-timezone → Luxon migration happened at the same time. In 1.4.0, `qcType`
+was renamed to `QC_negativeValues`. These were the most significant API-shaping
+changes to date.
 
 ### Validation and Error Handling
 
 | Condition                                            | Behavior                  | Where |
-|------------------------------------------------------|---------------------------|-------|
+|--------------------------------------------------------|----------------------------|-------|
 | `datetime`/`x` not arrays or unequal length          | `throw Error`             | `trimDate.js` |
 | `timezone` not a string                              | `throw Error`             | `trimDate.js` |
 | Any `datetime` entry not a Luxon `DateTime`          | `throw Error`             | `trimDate.js` |
@@ -199,6 +212,10 @@ explicitly as `null` — never silently swallowed.
   - `dist/air-monitor-algorithms.esm.js` — ES module (for modern bundlers/Node).
 - **Command:** `npm run build`.
 - `dist/` is a **build artifact directory** — do not hand-edit it. Regenerate it.
+  Rollup does not clean `dist/` before writing, so stray files from an older
+  build config can silently persist and get published (since `package.json`'s
+  `"files"` field includes `dist` wholesale). Run `rm -rf dist && npm run build`
+  before publishing if `dist/` contains anything beyond the four files above.
 - `package.json` version is the single source of truth for the published version.
 
 ### Testing

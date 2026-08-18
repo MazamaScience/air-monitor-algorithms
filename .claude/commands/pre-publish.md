@@ -1,15 +1,23 @@
 ---
-description: Bump patch version, update NEWS.md, rebuild docs, run tests, tag and commit. Ends with instructions for the developer to push and publish.
+description: Bump version, update changelog, run tests, commit, tag and hand off to developer for push and publish.
 allowed-tools: Read, Edit, Bash
 ---
 
-Prepare this project for a new patch release. Follow each step in order and
-stop immediately if any step fails.
+Prepare this project for a new release. Follow each step in order and stop
+immediately if any step fails.
 
 ## Step 1 — Determine the new version
 
-Read the current version from `package.json`. Compute the next patch version
-(e.g. `1.4.0` → `1.4.1`). Show both to the developer before continuing.
+<!-- TODO: Replace with the file and field that holds the current version.
+     Examples:
+     - JavaScript: read `"version"` from `package.json`
+     - Python: read `version` from `pyproject.toml` or `setup.cfg`
+     - R: read `Version:` from `DESCRIPTION`
+-->
+
+Read the current version from `<!-- TODO: version file -->`. Compute the next
+version (patch, minor, or major — ask the developer if unclear). Show both
+versions before continuing.
 
 ## Step 2 — Summarize changes since the last release
 
@@ -24,23 +32,30 @@ Read the output and identify the meaningful changes. Group them into:
 - New features or behavior changes
 - Documentation or tooling changes
 
-Use this as the basis for the NEWS.md entry in Step 4.
+Use this as the basis for the changelog entry in Step 4.
 
-## Step 3 — Bump the version in `package.json`
+## Step 3 — Bump the version
 
-Edit `package.json` to update the `"version"` field to the new patch version.
+<!-- TODO: Replace with the file and field to update.
+     Edit only the version field; do not change anything else.
+-->
+
+Edit `<!-- TODO: version file -->` to update the version to the new value.
 Do not change anything else in the file.
 
-## Step 4 — Update `NEWS.md`
+## Step 4 — Update the changelog
 
-Add a new entry at the top of `NEWS.md` using this format:
+<!-- TODO: Replace with your changelog file name (NEWS.md, CHANGELOG.md, etc.)
+     and the format you use. Example format shown below.
+-->
+
+Add a new entry at the top of `<!-- TODO: changelog file -->` using this format:
 
 ```
-# air-monitor-algorithms <new-version>
+# <project-name> <new-version>
 
 - <short bulleted description of change 1>
 - <short bulleted description of change 2>
-...
 ```
 
 Keep bullets concise (one line each). Use plain language. Do not copy commit
@@ -50,9 +65,12 @@ Mark breaking changes explicitly: **Breaking:** ...
 
 ## Step 5 — Rebuild documentation
 
-Run:
+JSDoc does not clean its output directory between runs, so stale pages for
+removed/renamed functions can accumulate in `docs/`. Remove the existing
+output before regenerating:
 
 ```
+rm -rf docs
 npm run docs
 ```
 
@@ -60,21 +78,23 @@ If it fails, stop and report the error.
 
 ## Step 6 — Run tests
 
+<!-- TODO: Replace with your test command. -->
+
 Run:
 
 ```
-npm test
+<!-- TODO: test command -->
 ```
 
 If any tests fail, stop and report the failures. Do not proceed.
 
-## Step 7 — Tag and commit
+## Step 7 — Commit and tag
 
 If Steps 5 and 6 both passed, run:
 
 ```
-git tag <new-version>
 git commit -a -m "Bump to <new-version>: <one-line summary of changes>"
+git tag <new-version>
 ```
 
 The commit message summary should be concise (under 72 characters) and describe
@@ -82,20 +102,21 @@ what changed functionally, not just "bump version".
 
 ## Step 8 — Handoff to developer
 
-Print the following instructions exactly, substituting the real version number:
+Print the following instructions exactly, substituting the real version number
+and the correct push/publish commands for this project:
 
 ---
 
-**Release `<new-version>` is staged. To publish, run these three commands:**
+**Release `<new-version>` is staged. To publish, run:**
 
 ```
 git push
 git push origin <new-version>
-npm publish --access public
+<!-- TODO: publish command (e.g. npm publish --access public, twine upload dist/*, etc.) -->
 ```
 
-**Do not run `npm publish` until `git push` has succeeded.**
+**Do not publish until `git push` has succeeded.**
 
 ---
 
-Do not run `git push` or `npm publish` yourself under any circumstances.
+Do not run `git push` or any publish command yourself under any circumstances.

@@ -30,11 +30,10 @@ novelty or abstraction.
 - Public functions should have clear API documentation describing parameters,
   return values, and units.
 - Include explanatory comments describing intent, not just implementation.
-- For scientific algorithms, document the reasoning and any external
+- For domain-specific algorithms, document the reasoning and any external
   specifications the code follows.
-- Many consumers are scientists and operational staff who are not professional
-  software engineers. Code readability and clear documentation are therefore
-  especially important.
+- Code readability and clear documentation matter — not all contributors are
+  professional software engineers.
 
 ## Refactoring
 
@@ -64,7 +63,7 @@ novelty or abstraction.
 
 When reviewing code, prioritize recommendations in this order:
 
-1. **Correctness** — especially in scientific calculations.
+1. **Correctness** — logic errors, edge cases, algorithmic mistakes.
 2. **Reliability** — operational robustness and backward compatibility.
 3. **Maintainability**
 4. **Readability**

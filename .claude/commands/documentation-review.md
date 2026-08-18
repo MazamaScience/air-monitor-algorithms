@@ -1,5 +1,5 @@
 ---
-description: Review JSDoc, README, NEWS, and Claude .md files for completeness, consistency, and alignment. Catches drift between source comments and user-facing docs.
+description: Review all documentation layers for completeness, consistency, and alignment with source code. Catches drift between inline comments and user-facing docs.
 allowed-tools: Read, Bash
 ---
 
@@ -7,44 +7,59 @@ Please review all documentation in this project for completeness and alignment.
 
 ## Scope
 
-Review three documentation layers:
+Review the documentation layers for this project:
 
-1. **JSDoc** — comments in `src/*.js` and their `@param`, `@returns`, `@example` blocks
-2. **Markdown** — `README.md`, `NEWS.md`, `CLAUDE.md`, `.claude/CLAUDE_ARCHITECTURE.md`
-3. **Cross-project docs** — `.claude/CLAUDE_STYLE_GUIDE.md`
+<!-- TODO: Replace with your project's documentation layers. Examples:
 
-## Checks for alignment
+     1. **Inline documentation** — comments in source files, docstrings, JSDoc,
+        roxygen2, etc.
+     2. **Markdown** — README.md, NEWS.md (or CHANGELOG.md), CLAUDE.md,
+        .claude/CLAUDE_ARCHITECTURE.md
+     3. **Generated docs** — any HTML documentation generated from inline comments
+     4. **Cross-project docs** — .claude/CLAUDE_STYLE_GUIDE.md
+     5. **Skills** — .claude/skills/*/SKILL.md, if any
+-->
 
-- **Function signatures:** Do exported function names, parameters, and return shapes
-  in README/CLAUDE match the JSDoc `@param` and `@returns` descriptions?
-- **Breaking changes:** Are breaking changes listed in `NEWS.md` (v1.4.0+) also
-  reflected in updated JSDoc and/or README.md examples?
-- **Renamed symbols:** When a function is renamed (e.g. `qcType` → `QC_negativeValues`
-  in v1.4.0), verify the old name does not appear in `.md` documentation, though
-  it may appear in `NEWS.md` as historical changelog.
-- **Units and conventions:** Do units, timezone requirements, and null-handling
-  conventions described in README/CLAUDE match the descriptions in JSDoc?
-- **Examples:** Do `@example` blocks in JSDoc match the usage pattern shown in
-  README's "Usage" section? Do they use the same Luxon conventions?
-- **Missing setup/prerequisites:** Does README clearly state the requirement for
-  Luxon `DateTime` in UTC? Is this also documented in CLAUDE.md constraints?
+## Checks for Alignment
+
+- **README template drift:** If this project has a `.claude/skills/generating-readme/`
+  skill, compare the top-level `README.md` against its `TEMPLATE.md`. Flag
+  sections that are missing, sections that no longer reflect what the repo
+  actually has, and any leftover placeholder text (bracketed fields, `TODO`
+  markers) that was never filled in. Separately, for any section the skill
+  marks as fixed content rather than repo-specific fact (e.g. Development →
+  Ending a Work Session), flag any deviation from the template's exact
+  wording — being present but reworded is drift too, not just being missing.
+  If this skill isn't present in the project, skip this check.
+- **Function signatures:** Do exported function names, parameters, and return
+  shapes in README and CLAUDE.md match the inline documentation in source files?
+- **Breaking changes:** Are breaking changes listed in the changelog also
+  reflected in updated inline docs and README examples?
+- **Renamed symbols:** When a function or type is renamed, verify the old name
+  does not appear in Markdown documentation (other than in changelog history).
+- **Units and conventions:** Do units, data format requirements, and
+  missing-value conventions described in README/CLAUDE match the inline docs?
+- **Examples:** Do inline doc examples match the usage patterns shown in README?
+- **Missing prerequisites:** Does README clearly state any required setup,
+  runtime dependencies, or environment assumptions?
 
 ## Identify
 
-- Missing or incomplete JSDoc (missing `@param`, `@returns`, `@example`, units)
-- Stale JSDoc (references renamed functions, outdated behavior)
-- Inconsistent conventions between `.md` files and JSDoc
+- Missing or incomplete inline documentation (missing parameters, return types,
+  units, or examples)
+- Stale inline documentation (references renamed functions or outdated behavior)
+- Inconsistent conventions between Markdown files and inline docs
 - Missing examples or unclear usage instructions
 - Confusing or contradictory sections
-- Outdated information (especially after version bumps)
+- Outdated information (especially after version bumps or renames)
 - Links or cross-references that are broken or dangling
 
 ## Provide
 
 Suggested improvements, with:
 - File and line number (or section name)
-- What the drift is
+- What the drift or gap is
 - How to fix it
-- Priority (high/medium/low)
+- Priority (high / medium / low)
 
 Do not modify any files.

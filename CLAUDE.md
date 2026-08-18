@@ -1,7 +1,7 @@
 # CLAUDE.md
 
-AI-oriented project guide for `air-monitor-algorithms`. Read this first, then
-consult the two companion documents as needed:
+AI-oriented project guide for `air-monitor-algorithms`. Read this first,
+then consult the two companion documents as needed:
 
 - **`.claude/CLAUDE_ARCHITECTURE.md`** — architecture, module map, call graph,
   public API contract, and design rationale.
@@ -10,8 +10,7 @@ consult the two companion documents as needed:
   These are portable conventions shared across projects.
 
 This file covers *conventions for this project*. The architecture doc
-details *how this project works*; the style guide governs
-*how we write code*.
+details *how this project works*; the style guide governs *how we write code*.
 
 ---
 
@@ -43,9 +42,13 @@ The primary goals of this project are:
 This project is a building block in operational air quality infrastructure.
 Correctness and robustness are more important than architectural sophistication.
 
+It is a small, mature library (currently v1.4.2) that has been in production
+use; treat it as being in maintenance-plus-careful-growth mode rather than
+early development.
+
 ---
 
-## JavaScript Style
+## Language and Style
 
 - Use modern ES6 JavaScript.
 - Use ESM (`import` / `export`) syntax.
@@ -95,17 +98,44 @@ Be conservative when modifying:
 - Units, rounding behavior, and missing-value handling
 
 Preserve backward compatibility whenever practical. Breaking changes warrant a
-deliberate version bump and a note in `NEWS.md`. See the "Public API Contract"
+deliberate version bump and a note in `CHANGELOG.md`. See the "Public API Contract"
 section of `.claude/CLAUDE_ARCHITECTURE.md` for the full contract.
 
-### Build, Test, and Documentation
+### Key Dependencies
 
-- Source lives in `src/`; the published bundles are generated into `dist/`.
-- `npm run build` — bundle with Rollup.
-- `npm run test` — run the uvu test suite in `tests/`.
-- `npm run docs` — generate JSDoc documentation.
-- New or changed behavior should be accompanied by tests.
-- Do not hand-edit files in `dist/`; they are build artifacts.
+- **Luxon** (`luxon` 3.6.1) is the only runtime dependency, used for all
+  date-and-time handling. Do not add further runtime dependencies without a
+  strong, discussed reason.
+- Build tooling (Rollup + plugins) and the test framework (uvu) are
+  devDependencies only and are not shipped to consumers.
+
+### Domain-Specific Rules
+
+- Do not hand-edit files in `dist/`; they are Rollup build artifacts.
+- Do not change the NowCast algorithm's numeric behavior without explicit
+  approval — it is a faithful port of EPA's published NowCast method, and its
+  quirks (value reversal, `null`→`NaN` handling, the 2-of-3-hours validity
+  rule) are correctness-critical, not incidental.
+- Do not change the `null`-for-missing-value convention or the "insufficient
+  data returns empty, malformed input throws" error-handling split (see
+  `.claude/CLAUDE_ARCHITECTURE.md`) without discussion — downstream consumers
+  rely on both.
+
+---
+
+## Build, Test, and Document
+
+- `npm run build` — bundle `src/index.js` with Rollup into `dist/` (UMD + ESM,
+  minified, with sourcemaps).
+- `npm test` — run the uvu test suite in `tests/`.
+- `npm run docs` — generate JSDoc HTML documentation into `docs/`.
+- Source lives in `src/`; published bundles are generated into `dist/` — do
+  not hand-edit `dist/`.
+- New or changed behavior should be accompanied by tests in the matching file
+  under `tests/`.
+- `package.json` is the single source of truth for the version number; bump
+  it deliberately and record changes in `CHANGELOG.md` (see the `pre-publish`
+  skill/command for the release workflow).
 
 ---
 
@@ -113,7 +143,7 @@ section of `.claude/CLAUDE_ARCHITECTURE.md` for the full contract.
 
 When reviewing code:
 
-1. Identify correctness issues, especially in scientific calculations.
+1. Identify correctness issues.
 2. Identify operational risks and backward-compatibility concerns.
 3. Identify documentation gaps.
 4. Suggest low-risk improvements.

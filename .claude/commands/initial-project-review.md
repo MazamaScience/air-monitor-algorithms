@@ -91,4 +91,3 @@ For each task, provide:
 - Assume the codebase needs refactoring; small incremental improvements are preferred.
 - Suggest architectural changes without strong justification.
 - Recommend adding dependencies unless there's significant value.
-
