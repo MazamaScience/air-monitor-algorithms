@@ -65,6 +65,8 @@ directory. Load these files directly in your browser to explore the library:
 
 ## Installation
 
+Requires Node.js 18 or later.
+
 To install the latest stable release from [npm](https://www.npmjs.com/package/air-monitor-algorithms):
 
 ```npm install air-monitor-algorithms```
@@ -150,7 +152,7 @@ npm run publish:public
 
 Publishes the package to [npm](https://www.npmjs.com/package/air-monitor-algorithms).
 You need an npm account with publish rights. `package.json` is the single source
-of truth for the version number; bump it and add a `NEWS.md` entry before
+of truth for the version number; bump it and add a `CHANGELOG.md` entry before
 publishing.
 
 ## License

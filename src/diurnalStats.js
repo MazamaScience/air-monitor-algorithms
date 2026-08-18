@@ -29,6 +29,8 @@ import {
  *   (clamp small negatives to 0, drop values below -10) or "drop" (drop all
  *   negatives). Default: "keep".
  * @returns {object} - Object with hour, count, min, mean, and max arrays.
+ * @throws {Error} If `trimDate` rejects the input (mismatched array lengths,
+ *   non-Luxon-DateTime entries, non-UTC timestamps, or an invalid timezone).
  * @example
  * const result = diurnalStats(datetime, pm25, "America/Los_Angeles");
  * // result.hour   — [0, 1, 2, ..., 23]

@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/MazamaScience/air-monitor-algorithms#readme",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "main": "./dist/air-monitor-algorithms.umd.js",
   "module": "./dist/air-monitor-algorithms.esm.js",
   "exports": {
